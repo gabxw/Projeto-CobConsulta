@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Fale Conosco";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <h2 class="fw-bold">Fale Conosco</h2>
+            <p class="text-muted">Tem alguma dúvida ou precisa de ajuda? Preencha o formulário ou entre em contato pelos nossos canais abaixo.</p>
+
+            <ul class="list-unstyled mt-4">
+                <li class="mb-2"><strong>Email:</strong> suporte@cobconsulta.com.br</li>
+                <li class="mb-2"><strong>Telefone:</strong> (31) 1234-5678</li>
+                <li class="mb-2"><strong>Endereço:</strong> Av. das Cobranças, 1000 - Belo Horizonte/MG</li>
+            </ul>
+
+            <div class="mt-4">
+                <a href="#" class="btn btn-primary me-2">WhatsApp</a>
+                <a href="#" class="btn btn-outline-secondary">Ver localização</a>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Envie uma mensagem</h5>
+
+                    <form>
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome</label>
+                            <input type="text" class="form-control" id="nome" placeholder="Seu nome completo">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="email" placeholder="seuemail@email.com">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="assunto" class="form-label">Assunto</label>
+                            <input type="text" class="form-control" id="assunto" placeholder="Assunto da mensagem">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="mensagem" class="form-label">Mensagem</label>
+                            <textarea class="form-control" id="mensagem" rows="4" placeholder="Escreva sua mensagem..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">Enviar Mensagem</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

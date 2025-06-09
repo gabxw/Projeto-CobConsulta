@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+
+@{
+    ViewData["Title"] = "Início";
+}
+
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h1 class="display-4 fw-bold">Bem-vindo ao Cob Consulta</h1>
+        <p class="lead">Gerencie suas cobranças com eficiência e praticidade.</p>
+    </div>
+
+    <div id="carouselCobConsulta" class="carousel slide mb-5" data-bs-ride="carousel">
+        <div class="carousel-inner rounded shadow">
+            <div class="carousel-item active">
+                <img src="/img/img1.jpg" class="d-block w-100" alt="Imagem 1">
+            </div>
+            <div class="carousel-item">
+                <img src="/img/img2.jpg" class="d-block w-100" alt="Imagem 2">
+            </div>
+            <div class="carousel-item">
+                <img src="/img/img3.jpg" class="d-block w-100" alt="Imagem 3">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselCobConsulta" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselCobConsulta" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+            <span class="visually-hidden">Próximo</span>
+        </button>
+    </div>
+
+    <div class="row text-center mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Consultar Débitos</h5>
+                    <p class="card-text">Veja quanto o cliente está devendo.</p>
+                    <a href="#" class="btn btn-primary w-100">Consultar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Emitir Segunda Via</h5>
+                    <p class="card-text">Gere uma nova via do boleto com facilidade.</p>
+                    <a href="#" class="btn btn-success w-100">Emitir Boleto</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Anexar Documentos</h5>
+                    <p class="card-text">Envie comprovantes ou documentos necessários.</p>
+                    <a href="#" class="btn btn-secondary w-100">Anexar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
