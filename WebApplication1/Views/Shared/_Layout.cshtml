@@ -26,9 +26,9 @@
                                 Serviços
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <li><a class="dropdown-item" href="#">Consulte Débito</a></li>
-                                <li><a class="dropdown-item" href="#">2° via de boleto</a></li>
-                                <li><a class="dropdown-item" href="#">Pagamento</a></li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Servicos" asp-action="ConsulteDebito">Consulte Débito</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Servicos" asp-action="EmitirSegundaVia">Emitir Segunda Via</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Servicos" asp-action="AnexarDocumentos">Anexar Documentos</a>
                             </ul>
                         </li>
 

@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Anexar Documentos";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="fw-bold mb-4">Anexar Documentos</h2>
+
+            <p class="text-muted">Envie aqui documentos necessários para análise, como comprovantes de pagamento, contratos ou outros arquivos relacionados à sua cobrança.</p>
+
+            <form method="post" enctype="multipart/form-data" action="/Documentos/Anexar">
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome Completo</label>
+                    <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite seu nome completo" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cpfCnpj" class="form-label">CPF ou CNPJ</label>
+                    <input type="text" class="form-control" id="cpfCnpj" name="cpfCnpj" placeholder="Digite seu CPF ou CNPJ" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="documento" class="form-label">Selecionar Documento</label>
+                    <input class="form-control" type="file" id="documento" name="documento" accept=".pdf,.jpg,.jpeg,.png" required>
+                    <div class="form-text">Formatos aceitos: PDF, JPG, JPEG ou PNG. Tamanho máximo recomendado: 5MB.</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Enviar Documento</button>
+            </form>
+
+            <div class="mt-5">
+                <h5 class="fw-semibold">Precisa de ajuda?</h5>
+                <p class="text-muted">Se estiver com dificuldades para enviar seu documento, entre em contato pelo nosso <a href="home/FaleConosco">Fale Conosco</a>.</p>
+            </div>
+        </div>
+    </div>
+</div>
