@@ -1,0 +1,23 @@
+﻿@model IEnumerable<WebApplication1.Models.Devedor>
+
+<h2>Clientes Cadastrados</h2>
+
+<a asp-action="Inserir" class="btn btn-success">Novo Cliente</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Name</td>
+                <td>@c.Email</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,15 @@
+﻿@model WebApplication1.Models.Devedor
+
+<h2>Novo Cliente</h2>
+
+<form asp-action="Inserir" method="post">
+    <div>
+        <label>Nome:</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+    <div>
+        <label>Email:</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
