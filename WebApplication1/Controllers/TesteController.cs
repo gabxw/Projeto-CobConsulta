@@ -25,7 +25,7 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-       
+
         [HttpPost]
         public IActionResult Inserir(Devedor cliente)
         {
@@ -33,7 +33,19 @@ namespace WebApplication1.Controllers
             {
                 _context.Devedores.Add(cliente);
                 _context.SaveChanges();
+                Console.WriteLine("SALVO COM SUCESSO");
                 return RedirectToAction("Index");
+            }
+
+            Console.WriteLine("FORMULÁRIO INVÁLIDO");
+
+            // ADICIONA: mostrar os erros um por um no terminal
+            foreach (var erro in ModelState)
+            {
+                foreach (var subErro in erro.Value.Errors)
+                {
+                    Console.WriteLine($"Erro em {erro.Key}: {subErro.ErrorMessage}");
+                }
             }
 
             return View(cliente);

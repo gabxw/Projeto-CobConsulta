@@ -3,13 +3,31 @@
 <h2>Novo Cliente</h2>
 
 <form asp-action="Inserir" method="post">
-    <div>
-        <label>Nome:</label>
+    <div class="form-group">
+        <label asp-for="Name"></label>
         <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
-    <div>
-        <label>Email:</label>
+    <div class="form-group">
+        <label asp-for="Email"></label>
         <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Cpf"></label>
+        <input asp-for="Cpf" class="form-control" />
+        <span asp-validation-for="Cpf" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Senha"></label>
+        <input asp-for="Senha" class="form-control" type="password" />
+        <span asp-validation-for="Senha" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Salvar</button>
 </form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
