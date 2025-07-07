@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250707115743_CriarTabelaEmpresa")]
+    partial class CriarTabelaEmpresa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.6");
@@ -104,10 +107,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Senha")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Telefone")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
