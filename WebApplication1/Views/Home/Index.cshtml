@@ -1,69 +1,183 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-
-
+﻿@model CobrancaPro.Models.DashboardViewModel
 @{
-    ViewData["Title"] = "Início";
+    ViewData["Title"] = "Dashboard";
+    ViewBag.ActiveMenuItem = Model.ActiveMenuItem;
 }
 
-<div class="container py-4">
-    <div class="text-center mb-4">
-        <h1 class="display-4 fw-bold">Bem-vindo ao Cob Consulta</h1>
-        <p class="lead">Gerencie suas cobranças com eficiência e praticidade.</p>
+<!-- KPI Cards -->
+<div class="kpi-cards">
+    <div class="kpi-card kpi-card-blue">
+        <div class="kpi-card-icon" style="background: var(--primary-gradient);">
+            <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="kpi-card-header">
+            <span class="kpi-card-title">Total a Receber</span>
+        </div>
+        <div class="kpi-card-value">@Model.KPIData.TotalToReceive.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</div>
+        <div class="kpi-card-change kpi-card-change-positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>@(Model.KPIData.TotalToReceiveChange)% em relação ao mês passado</span>
+        </div>
     </div>
 
-    <div id="carouselCobConsulta" class="carousel slide mb-5" data-bs-ride="carousel">
-        <div class="carousel-inner rounded shadow">
-            <div class="carousel-item active">
-                <img src="/img/img1.jpg" class="d-block w-100" alt="Imagem 1">
-            </div>
-            <div class="carousel-item">
-                <img src="/img/img2.jpg" class="d-block w-100" alt="Imagem 2">
-            </div>
-            <div class="carousel-item">
-                <img src="/img/img3.jpg" class="d-block w-100" alt="Imagem 3">
-            </div>
+    <div class="kpi-card kpi-card-green">
+        <div class="kpi-card-icon" style="background: var(--success-gradient);">
+            <i class="fas fa-check-circle"></i>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselCobConsulta" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-            <span class="visually-hidden">Anterior</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselCobConsulta" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-            <span class="visually-hidden">Próximo</span>
-        </button>
+        <div class="kpi-card-header">
+            <span class="kpi-card-title">Recebido Este Mês</span>
+        </div>
+        <div class="kpi-card-value">@Model.KPIData.ReceivedThisMonth.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</div>
+        <div class="kpi-card-change kpi-card-change-positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>@(Model.KPIData.ReceivedThisMonthChange)% em relação ao mês passado</span>
+        </div>
     </div>
 
-    <div class="row text-center mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Consultar Débitos</h5>
-                    <p class="card-text">Veja quanto o cliente está devendo.</p>
-                    <a href="#" class="btn btn-primary w-100">Consultar</a>
-                </div>
-            </div>
+    <div class="kpi-card kpi-card-orange">
+        <div class="kpi-card-icon" style="background: var(--warning-gradient);">
+            <i class="fas fa-clock"></i>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Emitir Segunda Via</h5>
-                    <p class="card-text">Gere uma nova via do boleto com facilidade.</p>
-                    <a href="#" class="btn btn-success w-100">Emitir Boleto</a>
-                </div>
-            </div>
+        <div class="kpi-card-header">
+            <span class="kpi-card-title">Atrasados</span>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Anexar Documentos</h5>
-                    <p class="card-text">Envie comprovantes ou documentos necessários.</p>
-                    <a href="#" class="btn btn-secondary w-100">Anexar</a>
-                </div>
-            </div>
+        <div class="kpi-card-value">@Model.KPIData.Overdue.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</div>
+        <div class="kpi-card-change kpi-card-change-positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>@(Model.KPIData.OverdueChange)% em relação ao mês passado</span>
+        </div>
+    </div>
+
+    <div class="kpi-card kpi-card-red">
+        <div class="kpi-card-icon" style="background: var(--danger-gradient);">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="kpi-card-header">
+            <span class="kpi-card-title">Clientes Inadimplentes</span>
+        </div>
+        <div class="kpi-card-value">@Model.KPIData.DefaultClients</div>
+        <div class="kpi-card-change kpi-card-change-neutral">
+            <span>=Mesmo que mês passado</span>
         </div>
     </div>
 </div>
 
+<!-- Billing Section -->
+<div class="billing-section">
+    <div class="billing-header">
+        <h2 class="billing-title">Últimas Cobranças</h2>
+        <div class="billing-actions">
+            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                <i class="fas fa-filter"></i> Filtrar
+            </button>
+            <button class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nova Cobrança
+            </button>
+        </div>
+    </div>
+
+    <!-- Search and Filter Form -->
+    <form method="post" action="@Url.Action("Search", "Home")" class="search-form">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <input type="text" name="searchTerm" value="@Model.SearchTerm" 
+                       class="form-control" placeholder="Pesquisar cobranças..." />
+            </div>
+            
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Billing Table -->
+    <div class="table-responsive">
+        <table class="table billing-table">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Valor</th>
+                    <th>Vencimento</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var record in Model.BillingRecords)
+                {
+                    <tr>
+                        <td class="client-cell">@record.Client</td>
+                        <td>@record.Value.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                        <td>@record.DueDate.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @switch (record.Status)
+                            {
+                                case CobrancaPro.Models.BillingStatus.Pago:
+                                    <span class="status-badge status-success">Pago</span>
+                                    break;
+                                case CobrancaPro.Models.BillingStatus.Pendente:
+                                    <span class="status-badge status-warning">Pendente</span>
+                                    break;
+                                case CobrancaPro.Models.BillingStatus.Atrasado:
+                                    <span class="status-badge status-danger">Atrasado</span>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-outline-primary" title="Visualizar">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                @if (record.Status == CobrancaPro.Models.BillingStatus.Atrasado)
+                                {
+                                    <button class="btn btn-sm btn-outline-warning" title="Notificar">
+                                        <i class="fas fa-bell"></i>
+                                    </button>
+                                }
+                                <button class="btn btn-sm btn-outline-info" title="Enviar Email">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Navegação de páginas">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { searchTerm = Model.SearchTerm, statusFilter = Model.StatusFilter, page = Model.CurrentPage - 1 })">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { searchTerm = Model.SearchTerm, statusFilter = Model.StatusFilter, page = i })">@i</a>
+                    </li>
+                }
+                
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { searchTerm = Model.SearchTerm, statusFilter = Model.StatusFilter, page = Model.CurrentPage + 1 })">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="pagination-info text-center">
+            Página @Model.CurrentPage de @Model.TotalPages
+        </div>
+    }
+</div>
