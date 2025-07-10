@@ -12,11 +12,12 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
+
+html {  
   position: relative;
   min-height: 100%;
 }
 
-body {
-  margin-bottom: 60px;
+body { 
+  margin-bottom: 59px;
 }
