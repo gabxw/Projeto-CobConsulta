@@ -1,0 +1,67 @@
+﻿@model WebApplication1.Models.Divida
+
+@{
+    ViewData["Title"] = "Detalhes da Dívida";
+}
+
+<h2 class="mt-3">Detalhes da Dívida</h2>
+
+<div class="border p-3 rounded bg-light">
+    <h4>Informações da Dívida</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Título</dt>
+        <dd class="col-sm-9">@Model.Titulo</dd>
+
+        <dt class="col-sm-3">Descrição</dt>
+        <dd class="col-sm-9">@Model.Descricao</dd>
+
+        <dt class="col-sm-3">Valor</dt>
+        <dd class="col-sm-9">R$ @Model.Valor</dd>
+
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">@Model.Status</dd>
+
+        <dt class="col-sm-3">Data de Vencimento</dt>
+        <dd class="col-sm-9">@Model.DataVencimento?.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-3">Data de Pagamento</dt>
+        <dd class="col-sm-9">
+            @(Model.DataPagamento.HasValue ? Model.DataPagamento.Value.ToString("dd/MM/yyyy") : "Não paga ainda")
+        </dd>
+    </dl>
+
+    <h4 class="mt-4">Informações do Devedor</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Nome</dt>
+        <dd class="col-sm-9">@Model.Devedor?.Name</dd>
+
+        <dt class="col-sm-3">E-mail</dt>
+        <dd class="col-sm-9">@Model.Devedor?.Email</dd>
+
+        <dt class="col-sm-3">CPF</dt>
+        <dd class="col-sm-9">@Model.Devedor?.Cpf</dd>
+    </dl>
+
+    <h4 class="mt-4">Informações da Empresa</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Nome</dt>
+        <dd class="col-sm-9">@Model.Empresa?.Nome</dd>
+
+        <dt class="col-sm-3">CNPJ</dt>
+        <dd class="col-sm-9">@Model.Empresa?.Cnpj</dd>
+
+        <dt class="col-sm-3">E-mail</dt>
+        <dd class="col-sm-9">@Model.Empresa?.Email</dd>
+
+        <dt class="col-sm-3">Telefone</dt>
+        <dd class="col-sm-9">@Model.Empresa?.Telefone</dd>
+    </dl>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+</div>

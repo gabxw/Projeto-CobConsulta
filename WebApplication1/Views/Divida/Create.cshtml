@@ -1,0 +1,58 @@
+﻿@model WebApplication1.Models.Divida
+
+@{
+    ViewData["Title"] = "Cadastrar Dívida";
+}
+
+<h2>Cadastrar Dívida</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="Titulo" class="control-label"></label>
+        <input asp-for="Titulo" class="form-control" />
+        <span asp-validation-for="Titulo" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Descricao" class="control-label"></label>
+        <input asp-for="Descricao" class="form-control" />
+        <span asp-validation-for="Descricao" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Valor" class="control-label"></label>
+        <input asp-for="Valor" class="form-control" />
+        <span asp-validation-for="Valor" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DataVencimento" class="control-label"></label>
+        <input asp-for="DataVencimento" class="form-control" type="date" />
+        <span asp-validation-for="DataVencimento" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+    <label asp-for="DevedorID" class="control-label"></label>
+    <select asp-for="DevedorID" class="form-control" asp-items="@(ViewBag.Devedores as SelectList)">
+        <option value="">-- Selecione o Devedor --</option>
+    </select>
+    <span asp-validation-for="DevedorID" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EmpresaID" class="control-label"></label>
+        <select asp-for="EmpresaID" class="form-control" asp-items="@(ViewBag.Empresas as SelectList)">
+            <option value="">-- Selecione a Empresa --</option>
+        </select>
+        <span asp-validation-for="EmpresaID" class="text-danger"></span>
+    </div>
+    <div class="form-group mt-3">
+        <input type="submit" value="Cadastrar" class="btn btn-primary" />
+    </div>
+</form>
+
+<div class="mt-3">
+    <a asp-action="Index">Voltar à Lista</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,73 @@
+﻿@model IEnumerable<WebApplication1.Models.Divida>
+
+@{
+    ViewData["Title"] = "Lista de Dívidas";
+}
+
+<h2>Lista de Dívidas</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Nova Dívida</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Titulo)</th>
+            <th>@Html.DisplayNameFor(model => model.Descricao)</th>
+            <th>@Html.DisplayNameFor(model => model.Valor)</th>
+            <th>@Html.DisplayNameFor(model => model.DataVencimento)</th>
+            <th>@Html.DisplayNameFor(model => model.DataPagamento)</th>
+            <th>@Html.DisplayNameFor(model => model.Status)</th>
+            <th>Devedor</th>
+            <th>Empresa</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Titulo</td>
+                <td>@item.Descricao</td>
+                <td>@item.Valor.ToString("C")</td>
+                <td>@item.DataVencimento?.ToString("dd/MM/yyyy")</td>
+                <td>@item.DataPagamento?.ToString("dd/MM/yyyy")</td>
+                <td>@item.Status</td>
+                <td>@item.Devedor?.Name</td>
+                <td>@item.Empresa?.Nome</td>
+                <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Editar</a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Detalhes</a>
+                <button type="button"
+                        class="btn btn-danger btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#confirmModal-@item.Id">
+                    Excluir
+                </button>
+
+                <!-- Modal aqui também -->
+                <div class="modal fade" id="confirmModal-@item.Id" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow">
+                      <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="confirmModalLabel">Confirmar Exclusão</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                      </div>
+                      <div class="modal-body">
+                        Tem certeza que deseja excluir a dívida <strong>@item.Titulo</strong>?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post">
+                            <button type="submit" class="btn btn-danger">Excluir</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </td>
+            </tr>
+        }
+    </tbody>
+</table>

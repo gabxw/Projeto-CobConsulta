@@ -1,0 +1,63 @@
+﻿@model WebApplication1.Models.ViewModels.DividaViewModel
+
+@{
+    ViewData["Title"] = "Cadastrar Dívida";
+}
+
+<h2>Cadastrar Dívida</h2>
+
+<form asp-action="Criar" method="post">
+    <div class="form-group">
+        <label asp-for="Divida.Titulo"></label>
+        <input asp-for="Divida.Titulo" class="form-control" />
+        <span asp-validation-for="Divida.Titulo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Divida.Descricao"></label>
+        <input asp-for="Divida.Descricao" class="form-control" />
+        <span asp-validation-for="Divida.Descricao" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Divida.Valor"></label>
+        <input asp-for="Divida.Valor" class="form-control" />
+        <span asp-validation-for="Divida.Valor" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Divida.DataVencimento"></label>
+        <input asp-for="Divida.DataVencimento" class="form-control" type="date" />
+        <span asp-validation-for="Divida.DataVencimento" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Divida.DataPagamento"></label>
+        <input asp-for="Divida.DataPagamento" class="form-control" type="date" />
+        <span asp-validation-for="Divida.DataPagamento" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DevedorId">Devedor</label>
+        <select asp-for="DevedorId" asp-items="Model.Devedores" class="form-control"></select>
+        <span asp-validation-for="DevedorId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EmpresaId">Empresa</label>
+        <select asp-for="EmpresaId" asp-items="Model.Empresas" class="form-control"></select>
+        <span asp-validation-for="EmpresaId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Divida.Status"></label>
+        <input asp-for="Divida.Status" class="form-control" />
+        <span asp-validation-for="Divida.Status" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}
