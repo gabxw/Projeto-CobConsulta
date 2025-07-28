@@ -41,6 +41,10 @@ namespace WebApplication1.Controllers
         // GET: Divida/Create
         public IActionResult Create()
         {
+            if (HttpContext.Session.GetString("Tipo") != "Admin")
+            {
+                return RedirectToAction("AcessoNegado", "Login");
+            }
             ViewBag.Devedores = new SelectList(_context.Devedores.ToList(), "Id", "Name");
             ViewBag.Empresas = new SelectList(_context.Empresas.ToList(), "Id", "Nome");
 
