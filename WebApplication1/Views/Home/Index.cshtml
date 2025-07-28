@@ -4,180 +4,463 @@
     ViewBag.ActiveMenuItem = Model.ActiveMenuItem;
 }
 
-<!-- KPI Cards -->
-<div class="kpi-cards">
-    <div class="kpi-card kpi-card-blue">
-        <div class="kpi-card-icon" style="background: var(--primary-gradient);">
-            <i class="fas fa-dollar-sign"></i>
-        </div>
-        <div class="kpi-card-header">
-            <span class="kpi-card-title">Total a Receber</span>
-        </div>
-        <div class="kpi-card-value">@Model.KPIData.TotalToReceive.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</div>
-        <div class="kpi-card-change kpi-card-change-positive">
-            <i class="fas fa-arrow-up"></i>
-            <span>@(Model.KPIData.TotalToReceiveChange)% em relação ao mês passado</span>
-        </div>
-    </div>
-
-    <div class="kpi-card kpi-card-green">
-        <div class="kpi-card-icon" style="background: var(--success-gradient);">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <div class="kpi-card-header">
-            <span class="kpi-card-title">Recebido Este Mês</span>
-        </div>
-        <div class="kpi-card-value">@Model.KPIData.ReceivedThisMonth.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</div>
-        <div class="kpi-card-change kpi-card-change-positive">
-            <i class="fas fa-arrow-up"></i>
-            <span>@(Model.KPIData.ReceivedThisMonthChange)% em relação ao mês passado</span>
-        </div>
-    </div>
-
-    <div class="kpi-card kpi-card-orange">
-        <div class="kpi-card-icon" style="background: var(--warning-gradient);">
-            <i class="fas fa-clock"></i>
-        </div>
-        <div class="kpi-card-header">
-            <span class="kpi-card-title">Atrasados</span>
-        </div>
-        <div class="kpi-card-value">@Model.KPIData.Overdue.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</div>
-        <div class="kpi-card-change kpi-card-change-positive">
-            <i class="fas fa-arrow-up"></i>
-            <span>@(Model.KPIData.OverdueChange)% em relação ao mês passado</span>
-        </div>
-    </div>
-
-    <div class="kpi-card kpi-card-red">
-        <div class="kpi-card-icon" style="background: var(--danger-gradient);">
-            <i class="fas fa-exclamation-triangle"></i>
-        </div>
-        <div class="kpi-card-header">
-            <span class="kpi-card-title">Clientes Inadimplentes</span>
-        </div>
-        <div class="kpi-card-value">@Model.KPIData.DefaultClients</div>
-        <div class="kpi-card-change kpi-card-change-neutral">
-            <span>=Mesmo que mês passado</span>
-        </div>
-    </div>
-</div>
-
-<!-- Billing Section -->
-<div class="billing-section">
-    <div class="billing-header">
-        <h2 class="billing-title">Últimas Cobranças</h2>
-        <div class="billing-actions">
-            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filterModal">
-                <i class="fas fa-filter"></i> Filtrar
-            </button>
-            <button class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nova Cobrança
-            </button>
-        </div>
-    </div>
-
-    <!-- Search and Filter Form -->
-    <form method="post" action="@Url.Action("Search", "Home")" class="search-form">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-6">
-                <input type="text" name="searchTerm" value="@Model.SearchTerm" 
-                       class="form-control" placeholder="Pesquisar cobranças..." />
+<div class="font-sans antialiased text-gray-800 bg-gray-50">
+    <!-- Header/Navbar -->
+    <header class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-file-invoice-dollar text-white text-xl"></i>
+                </div>
+                <span class="text-xl font-bold text-gray-800">CobConsulta</span>
             </div>
-            
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-search"></i> Buscar
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="text-blue-600 font-medium hover:text-blue-800 transition">Início</a>
+                <a href="#empresa" class="text-gray-600 hover:text-blue-600 transition">Para Empresas</a>
+                <a href="#cliente" class="text-gray-600 hover:text-blue-600 transition">Para Clientes</a>
+                <a href="#faq" class="text-gray-600 hover:text-blue-600 transition">Dúvidas</a>
+                <a href="#contato" class="text-gray-600 hover:text-blue-600 transition">Contato</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <a href="#" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Acessar</a>
+                <button class="md:hidden text-gray-600">
+                    <i class="fas fa-bars text-xl"></i>
                 </button>
             </div>
         </div>
-    </form>
+    </header>
 
-    <!-- Billing Table -->
-    <div class="table-responsive">
-        <table class="table billing-table">
-            <thead>
-                <tr>
-                    <th>Cliente</th>
-                    <th>Valor</th>
-                    <th>Vencimento</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var record in Model.BillingRecords)
-                {
-                    <tr>
-                        <td class="client-cell">@record.Client</td>
-                        <td>@record.Value.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
-                        <td>@record.DueDate.ToString("dd/MM/yyyy")</td>
-                        <td>
-                            @switch (record.Status)
-                            {
-                                case CobrancaPro.Models.BillingStatus.Pago:
-                                    <span class="status-badge status-success">Pago</span>
-                                    break;
-                                case CobrancaPro.Models.BillingStatus.Pendente:
-                                    <span class="status-badge status-warning">Pendente</span>
-                                    break;
-                                case CobrancaPro.Models.BillingStatus.Atrasado:
-                                    <span class="status-badge status-danger">Atrasado</span>
-                                    break;
-                            }
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn btn-sm btn-outline-primary" title="Visualizar">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                @if (record.Status == CobrancaPro.Models.BillingStatus.Atrasado)
-                                {
-                                    <button class="btn btn-sm btn-outline-warning" title="Notificar">
-                                        <i class="fas fa-bell"></i>
-                                    </button>
-                                }
-                                <button class="btn btn-sm btn-outline-info" title="Enviar Email">
-                                    <i class="fas fa-envelope"></i>
-                                </button>
+    <!-- Hero Section -->
+    <section class="hero-pattern py-16 md:py-24">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">Gestão de Cobranças <span class="text-blue-600">Simplificada</span></h1>
+                <p class="text-lg text-gray-600 mb-8">Soluções completas para empresas e clientes gerenciarem suas cobranças de forma transparente e eficiente.</p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="#" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-center font-medium">Sou Empresa</a>
+                    <a href="#" class="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition text-center font-medium">Sou Cliente</a>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <div class="relative w-full max-w-md">
+                    <div class="absolute -top-6 -left-6 w-64 h-64 bg-blue-100 rounded-2xl opacity-50"></div>
+                    <div class="absolute -bottom-6 -right-6 w-64 h-64 bg-green-100 rounded-2xl opacity-50"></div>
+                    <div class="relative bg-white p-6 rounded-2xl shadow-xl">
+                        <div class="flex items-center space-x-3 mb-6">
+                            <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white"></i>
                             </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Pagination -->
-    @if (Model.TotalPages > 1)
-    {
-        <nav aria-label="Navegação de páginas">
-            <ul class="pagination justify-content-center">
-                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
-                    <a class="page-link" href="@Url.Action("Index", new { searchTerm = Model.SearchTerm, statusFilter = Model.StatusFilter, page = Model.CurrentPage - 1 })">
-                        <i class="fas fa-chevron-left"></i>
-                    </a>
-                </li>
-                
-                @for (int i = 1; i <= Model.TotalPages; i++)
-                {
-                    <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
-                        <a class="page-link" href="@Url.Action("Index", new { searchTerm = Model.SearchTerm, statusFilter = Model.StatusFilter, page = i })">@i</a>
-                    </li>
-                }
-                
-                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
-                    <a class="page-link" href="@Url.Action("Index", new { searchTerm = Model.SearchTerm, statusFilter = Model.StatusFilter, page = Model.CurrentPage + 1 })">
-                        <i class="fas fa-chevron-right"></i>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-        
-        <div class="pagination-info text-center">
-            Página @Model.CurrentPage de @Model.TotalPages
+                            <h3 class="text-xl font-bold text-gray-800">Área do Cliente</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-search text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Consultar dívidas</h4>
+                                    <p class="text-sm text-gray-500">Verifique seus débitos de forma rápida</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-barcode text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">2ª via de boleto</h4>
+                                    <p class="text-sm text-gray-500">Solicite uma nova via para pagamento</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-paperclip text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Anexar documentos</h4>
+                                    <p class="text-sm text-gray-500">Envie comprovantes e arquivos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    }
-</div>
+    </section>
+
+    <!-- Empresa Section -->
+    <section id="empresa" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Soluções para <span class="text-blue-600">Empresas</span></h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Gerencie sua carteira de clientes e cobranças com nossas ferramentas especializadas.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:border-blue-500 transition">
+                    <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-users text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Clientes Devedores</h3>
+                    <p class="text-gray-600 mb-4">Lista completa e atualizada de todos os clientes com pendências financeiras.</p>
+                    <a href="#" class="text-blue-600 font-medium hover:text-blue-800 flex items-center">
+                        Saiba mais
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:border-blue-500 transition">
+                    <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-line text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Relatórios Financeiros</h3>
+                    <p class="text-gray-600 mb-4">Dashboard completo com valores devidos, históricos e projeções.</p>
+                    <a href="#" class="text-blue-600 font-medium hover:text-blue-800 flex items-center">
+                        Saiba mais
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-xl border border-gray-200 hover:border-blue-500 transition">
+                    <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-bell text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Notificações Automáticas</h3>
+                    <p class="text-gray-600 mb-4">Sistema inteligente que alerta sobre vencimentos e atualizações.</p>
+                    <a href="#" class="text-blue-600 font-medium hover:text-blue-800 flex items-center">
+                        Saiba mais
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cliente Section -->
+    <section id="cliente" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Serviços para <span class="text-blue-600">Clientes</span></h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Regularize sua situação financeira de forma rápida e transparente.</p>
+            </div>
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="md:flex">
+                        <div class="md:w-1/2 p-8">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">Consulte suas dívidas</h3>
+                            <p class="text-gray-600 mb-6">Acesso rápido e seguro às informações sobre seus débitos pendentes.</p>
+                            <ul class="space-y-4 mb-8">
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1">
+                                        <div class="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-white text-xs"></i>
+                                        </div>
+                                    </div>
+                                    <p class="ml-3 text-gray-600">Consulta 100% online</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1">
+                                        <div class="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-white text-xs"></i>
+                                        </div>
+                                    </div>
+                                    <p class="ml-3 text-gray-600">Histórico completo de cobranças</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1">
+                                        <div class="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-white text-xs"></i>
+                                        </div>
+                                    </div>
+                                    <p class="ml-3 text-gray-600">Detalhamento de valores</p>
+                                </li>
+                            </ul>
+                            <a href="#" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">Consultar Agora</a>
+                        </div>
+                        <div class="md:w-1/2 bg-blue-50 flex items-center justify-center p-8">
+                            <div class="w-full max-w-xs">
+                                <div class="bg-white p-6 rounded-lg shadow-md">
+                                    <h4 class="font-bold text-gray-800 mb-4">Faça seu login</h4>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">CPF/CNPJ</label>
+                                            <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                                            <input type="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <button class="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Entrar</button>
+                                        <div class="text-center">
+                                            <a href="#" class="text-sm text-blue-600 hover:text-blue-800">Esqueceu sua senha?</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 mt-12">
+                <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mr-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-barcode text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Segunda via de boleto</h3>
+                            <p class="text-gray-600 mb-4">Solicite uma nova via de boleto bancário para pagamento em lotéricas, internet banking ou outros canais.</p>
+                            <a href="#" class="text-blue-600 font-medium hover:text-blue-800">Solicitar boleto →</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mr-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-paperclip text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Envio de documentos</h3>
+                            <p class="text-gray-600 mb-4">Anexe comprovantes de pagamento ou outros documentos importantes para análise da sua situação.</p>
+                            <a href="#" class="text-blue-600 font-medium hover:text-blue-800">Anexar arquivos →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Dúvidas <span class="text-blue-600">Frequentes</span></h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Encontre respostas para as perguntas mais comuns sobre nossos serviços.</p>
+            </div>
+            <div class="max-w-3xl mx-auto">
+                <div class="space-y-4">
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="faq-item w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition">
+                            <span class="font-medium text-gray-800">Como consultar minhas dívidas?</span>
+                            <i class="fas fa-chevron-down text-blue-600 transition-transform"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-4 pt-2">
+                            <p class="text-gray-600">Você pode consultar suas dívidas acessando a área do cliente com seu CPF e senha. Caso seja seu primeiro acesso, clique em "Cadastre-se" e siga as instruções para criar sua conta.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="faq-item w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition">
+                            <span class="font-medium text-gray-800">Quais formas de pagamento são aceitas?</span>
+                            <i class="fas fa-chevron-down text-blue-600 transition-transform"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-4 pt-2">
+                            <p class="text-gray-600">Aceitamos boleto bancário, cartão de crédito (Visa, Mastercard, Elo), débito online e PIX. Cada empresa credora pode disponibilizar formas de pagamento específicas.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="faq-item w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition">
+                            <span class="font-medium text-gray-800">Como solicitar segunda via de boleto?</span>
+                            <i class="fas fa-chevron-down text-blue-600 transition-transform"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-4 pt-2">
+                            <p class="text-gray-600">Após realizar o login na área do cliente, clique em "Segunda via de boleto" no menu principal. Selecione a cobrança desejada e clique em "Gerar boleto". Você poderá imprimir ou baixar o arquivo PDF.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="faq-item w-full px-6 py-4 text-left flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition">
+                            <span class="font-medium text-gray-800">Quais documentos posso anexar no sistema?</span>
+                            <i class="fas fa-chevron-down text-blue-600 transition-transform"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-4 pt-2">
+                            <p class="text-gray-600">Você pode anexar comprovantes de pagamento (ex: recibos, comprovante de transferência), documentos pessoais (com proteção de dados sensíveis), contratos ou qualquer outro documento relevante para comprovar sua situação.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-10">
+                    <a href="#" class="inline-block px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition font-medium">Ver todas as dúvidas</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contato" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Fale <span class="text-blue-600">Conosco</span></h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Entre em contato para tirar dúvidas, enviar sugestões ou solicitar informações.</p>
+            </div>
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-1/2 p-8">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">Envie sua mensagem</h3>
+                        <form>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                                <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                                <input type="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Assunto</label>
+                                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                    <option>Selecione...</option>
+                                    <option>Dúvida sobre cobrança</option>
+                                    <option>Problemas no acesso</option>
+                                    <option>Segunda via de boleto</option>
+                                    <option>Sugestão</option>
+                                    <option>Outro</option>
+                                </select>
+                            </div>
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Mensagem</label>
+                                <textarea rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">Enviar Mensagem</button>
+                        </form>
+                    </div>
+                    <div class="md:w-1/2 bg-blue-600 text-white p-8">
+                        <h3 class="text-2xl font-bold mb-6">Informações de Contato</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1 mr-4">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-1">Endereço</h4>
+                                    <p class="opacity-90">Av. Paulista, 1000 - São Paulo/SP<br>CEP: 01310-100</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1 mr-4">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-1">Telefones</h4>
+                                    <p class="opacity-90">(11) 4004-4004 - Capitais<br>0800 400 4004 - Demais regiões</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1 mr-4">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-1">E-mail</h4>
+                                    <p class="opacity-90">contato@cobconsulta.com.br</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1 mr-4">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-1">Horário de Atendimento</h4>
+                                    <p class="opacity-90">Segunda a sexta: 8h às 18h<br>Sábado: 9h às 13h</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-8">
+                            <h4 class="font-medium mb-4">Redes Sociais</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-file-invoice-dollar text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">CobConsulta</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Soluções completas e transparentes em gestão de cobranças para empresas e clientes.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Empresa</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Sobre Nós</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Termos de Uso</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Política de Privacidade</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Trabalhe Conosco</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Links Úteis</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Área do Cliente</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Área da Empresa</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Dúvidas Frequentes</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Central de Ajuda</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+                    <p class="text-gray-400 mb-4">Receba novidades e atualizações em seu e-mail.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="Seu e-mail" class="px-4 py-2 rounded-l-lg focus:outline-none text-gray-900 w-full">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r-lg">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
+                <p>© 2023 CobConsulta. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const content = item.nextElementSibling;
+                const arrow = item.querySelector('i');
+
+                if (content.classList.contains('hidden')) {
+                    content.classList.remove('hidden');
+                    arrow.classList.add('rotate-180');
+                } else {
+                    content.classList.add('hidden');
+                    arrow.classList.remove('rotate-180');
+                }
+            });
+        });
+
+
+    </script>

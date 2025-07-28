@@ -1,5 +1,17 @@
 ﻿// Cobrança Pro - JavaScript Functions
-
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                primary: '#3B82F6',
+                secondary: '#1E40AF',
+                accent: '#10B981',
+                dark: '#1F2937',
+                light: '#F3F4F6',
+            }
+        }
+    }
+}
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
