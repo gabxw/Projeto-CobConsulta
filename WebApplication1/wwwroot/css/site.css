@@ -20,3 +20,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+#botao-login:hover {
+    background-color: #004080 !important; 
+    border-color: #004080 !important;
+}
