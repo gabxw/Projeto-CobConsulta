@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddControllersWithViews()
     .AddDataAnnotationsLocalization();
+    builder.Services.AddSession();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -34,6 +35,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

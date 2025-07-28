@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container mt-5" style="max-width: 400px;">
+    <h2 class="text-center mb-4">Login</h2>
+
+    <form method="post" class="needs-validation" novalidate>
+        <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+            <input type="email" class="form-control" name="email" placeholder="Digite seu e-mail" required>
+            <div class="invalid-feedback">Por favor, insira um e-mail válido.</div>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+            <input type="password" class="form-control" id="senha" name="senha" placeholder="Digite sua senha" required>
+            <button class="btn btn-outline-secondary" type="button" onclick="toggleSenha()">
+                <i class="bi bi-eye-fill" id="iconeSenha"></i>
+            </button>
+            <div class="invalid-feedback">A senha é obrigatória.</div>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Entrar</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+        <script>
+
+            (function () {
+                'use strict';
+                const forms = document.querySelectorAll('.needs-validation');
+                Array.from(forms).forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            })();
+
+            function toggleSenha() {
+                const input = document.getElementById("senha");
+                const icone = document.getElementById("iconeSenha");
+                if (input.type === "password") {
+                    input.type = "text";
+                    icone.classList.remove("bi-eye-fill");
+                    icone.classList.add("bi-eye-slash-fill");
+                } else {
+                    input.type = "password";
+                    icone.classList.remove("bi-eye-slash-fill");
+                    icone.classList.add("bi-eye-fill");
+                }
+            }
+        </script>
+}
