@@ -1,27 +1,5 @@
-html {
-  font-size: 14px;
-}
+﻿@import "tailwindcss";
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-}
-
-#botao-login:hover {
-    background-color: #004080 !important; 
-    border-color: #004080 !important;
+.hero-pattern {
+    background-image: radial-gradient(at 40% 20%, hsla(215,98%,61%,0.4) 0, transparent 50%), radial-gradient(at 80% 0%, hsla(189,100%,56%,0.4) 0, transparent 50%), radial-gradient(at 0% 50%, hsla(355,100%,93%,0.4) 0, transparent 50%);
 }

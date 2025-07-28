@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -104,15 +104,6 @@
     </div>
 
 
+    @RenderSection("Scripts", required: false)
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Cob Consulta - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacidade</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
 </html>
