@@ -21,27 +21,53 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Serviços
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" asp-area="" asp-controller="Servicos" asp-action="ConsulteDebito">Consulte Débito</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Servicos" asp-action="EmitirSegundaVia">Emitir Segunda Via</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Servicos" asp-action="AnexarDocumentos">Anexar Documentos</a>
+                                <a class="dropdown-item" asp-controller="Servicos" asp-action="ConsulteDebito">Consulte Débito</a>
+                                <a class="dropdown-item" asp-controller="Servicos" asp-action="EmitirSegundaVia">Emitir Segunda Via</a>
+                                <a class="dropdown-item" asp-controller="Servicos" asp-action="AnexarDocumentos">Anexar Documentos</a>
                             </ul>
                         </li>
 
-                        </li>
-                        
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Dúvidas</a>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Dúvidas</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="FaleConosco">Fale conosco</a>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="FaleConosco">Fale conosco</a>
                         </li>
-                       
+
+                        @* MENU PARA ADMIN *@
+                        @if (Context.Session.GetString("Tipo") == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Empresa" asp-action="Index">Empresas</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Devedor" asp-action="Index">Devedores</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Divida" asp-action="Create">Nova Dívida</a>
+                            </li>
+                        }
+
+                        @* MENU PARA EMPRESA *@
+                        @if (Context.Session.GetString("Tipo") == "Empresa")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Divida" asp-action="Index">Minhas Cobranças</a>
+                            </li>
+                        }
+
+                        @* MENU PARA DEVEDOR *@
+                        @if (Context.Session.GetString("Tipo") == "Devedor")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Divida" asp-action="MinhasDividas">Minhas Dívidas</a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav ms-auto">
                         @if (Context.Session.GetString("Tipo") == null)
