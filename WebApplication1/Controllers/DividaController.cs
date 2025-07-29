@@ -17,10 +17,19 @@ namespace WebApplication1.Controllers
         // GET: Divida
         public async Task<IActionResult> Index()
         {
+            if (HttpContext.Session.GetString("Tipo") != "Empresa")
+            {
+                return RedirectToAction("AcessoNegado", "Login");
+            }
+
+            int empresaId = HttpContext.Session.GetInt32("Id") ?? 0;
             var dividas = _context.Dividas
                 .Include(d => d.Devedor)
-                .Include(d => d.Empresa);
-            return View(await dividas.ToListAsync());
+                .Include(d => d.Empresa)
+                .Where(d => d.EmpresaID == empresaId)
+                .ToList();
+
+            return View(dividas);
         }
 
         // GET: Divida/Details/5
