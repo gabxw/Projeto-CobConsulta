@@ -17,7 +17,7 @@ namespace WebApplication1.Controllers
         // GET: Divida
         public async Task<IActionResult> Index()
         {
-            if (HttpContext.Session.GetString("Tipo") != "Empresa")
+            if (HttpContext.Session.GetString("Tipo") != "Empresa" && HttpContext.Session.GetString("Tipo") != "Admin")
             {
                 return RedirectToAction("AcessoNegado", "Login");
             }
@@ -25,11 +25,15 @@ namespace WebApplication1.Controllers
             int empresaId = HttpContext.Session.GetInt32("Id") ?? 0;
             var dividas = _context.Dividas
                 .Include(d => d.Devedor)
-                .Include(d => d.Empresa)
-                .Where(d => d.EmpresaID == empresaId)
-                .ToList();
+                .Include(d => d.Empresa);
 
-            return View(dividas);
+            // Se for empresa, filtra apenas as próprias dívidas
+            if (HttpContext.Session.GetString("Tipo") == "Empresa")
+            {
+                return View(await dividas.Where(d => d.EmpresaID == empresaId).ToListAsync());
+            }
+
+            return View(await dividas.ToListAsync()); // Admin vê tudo
         }
 
         // GET: Divida/Details/5
@@ -44,6 +48,13 @@ namespace WebApplication1.Controllers
 
             if (divida == null) return NotFound();
 
+            // Bloqueia empresa acessando dívida de outra empresa
+            if (HttpContext.Session.GetString("Tipo") == "Empresa" &&
+                divida.EmpresaID != HttpContext.Session.GetInt32("Id"))
+            {
+                return RedirectToAction("AcessoNegado", "Login");
+            }
+
             return View(divida);
         }
 
@@ -51,9 +62,8 @@ namespace WebApplication1.Controllers
         public IActionResult Create()
         {
             if (HttpContext.Session.GetString("Tipo") != "Admin")
-            {
                 return RedirectToAction("AcessoNegado", "Login");
-            }
+
             ViewBag.Devedores = new SelectList(_context.Devedores.ToList(), "Id", "Name");
             ViewBag.Empresas = new SelectList(_context.Empresas.ToList(), "Id", "Nome");
 
@@ -65,12 +75,15 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Divida divida)
         {
+            if (HttpContext.Session.GetString("Tipo") != "Admin")
+                return RedirectToAction("AcessoNegado", "Login");
+
             if (ModelState.IsValid)
             {
                 try
                 {
                     divida.Status = "Pendente";
-                    divida.DataPagamento = null; // Deve ser null, não DataTime.MinValue
+                    divida.DataPagamento = null;
                     _context.Add(divida);
                     await _context.SaveChangesAsync();
 
@@ -85,23 +98,24 @@ namespace WebApplication1.Controllers
 
             ViewBag.Devedores = new SelectList(_context.Devedores.ToList(), "Id", "Name", divida.DevedorID);
             ViewBag.Empresas = new SelectList(_context.Empresas.ToList(), "Id", "Nome", divida.EmpresaID);
-            foreach (var erro in ModelState)
-            {
-                foreach (var subErro in erro.Value.Errors)
-                {
-                    Console.WriteLine($"Erro em {erro.Key}: {subErro.ErrorMessage}");
-                }
-            }
             return View(divida);
         }
 
         // GET: Divida/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (HttpContext.Session.GetString("Tipo") != "Empresa" && HttpContext.Session.GetString("Tipo") != "Admin")
+                return RedirectToAction("AcessoNegado", "Login");
+
             if (id == null) return NotFound();
 
             var divida = await _context.Dividas.FindAsync(id);
             if (divida == null) return NotFound();
+
+            // Empresa só edita sua própria dívida
+            if (HttpContext.Session.GetString("Tipo") == "Empresa" &&
+                divida.EmpresaID != HttpContext.Session.GetInt32("Id"))
+                return RedirectToAction("AcessoNegado", "Login");
 
             ViewBag.Devedores = new SelectList(_context.Devedores.ToList(), "Id", "Name", divida.DevedorID);
             ViewBag.Empresas = new SelectList(_context.Empresas.ToList(), "Id", "Nome", divida.EmpresaID);
@@ -114,6 +128,9 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> Edit(int id, Divida divida)
         {
             if (id != divida.Id) return NotFound();
+
+            if (HttpContext.Session.GetString("Tipo") != "Empresa" && HttpContext.Session.GetString("Tipo") != "Admin")
+                return RedirectToAction("AcessoNegado", "Login");
 
             if (ModelState.IsValid)
             {
@@ -139,6 +156,9 @@ namespace WebApplication1.Controllers
         // GET: Divida/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            if (HttpContext.Session.GetString("Tipo") != "Empresa" && HttpContext.Session.GetString("Tipo") != "Admin")
+                return RedirectToAction("AcessoNegado", "Login");
+
             if (id == null) return NotFound();
 
             var divida = await _context.Dividas
@@ -148,6 +168,11 @@ namespace WebApplication1.Controllers
 
             if (divida == null) return NotFound();
 
+            // Empresa só exclui sua própria dívida
+            if (HttpContext.Session.GetString("Tipo") == "Empresa" &&
+                divida.EmpresaID != HttpContext.Session.GetInt32("Id"))
+                return RedirectToAction("AcessoNegado", "Login");
+
             return View(divida);
         }
 
@@ -156,6 +181,9 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (HttpContext.Session.GetString("Tipo") != "Empresa" && HttpContext.Session.GetString("Tipo") != "Admin")
+                return RedirectToAction("AcessoNegado", "Login");
+
             try
             {
                 var divida = await _context.Dividas.FindAsync(id);
@@ -173,5 +201,25 @@ namespace WebApplication1.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Divida/MinhasDividas
+        public async Task<IActionResult> MinhasDividas()
+        {
+            if (HttpContext.Session.GetString("Tipo") != "Devedor")
+            {
+                return RedirectToAction("AcessoNegado", "Login");
+            }
+
+            int devedorId = HttpContext.Session.GetInt32("DevedorId") ?? 0;
+
+            var dividas = await _context.Dividas
+                .Include(d => d.Empresa)
+                .Where(d => d.DevedorID == devedorId)
+                .ToListAsync();
+
+            return View(dividas);
+        }
+
+
     }
 }
