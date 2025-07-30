@@ -2,60 +2,36 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="container mt-5" style="max-width: 400px;">
-    <h2 class="text-center mb-4">Login</h2>
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Entrar no Sistema</h2>
 
-    <form method="post" class="needs-validation" novalidate>
-        <div class="input-group mb-3">
-            <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-            <input type="email" class="form-control" name="email" placeholder="Digite seu e-mail" required>
-            <div class="invalid-feedback">Por favor, insira um e-mail válido.</div>
-        </div>
+        @if (ViewBag.Erro != null)
+        {
+            <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm">
+                @ViewBag.Erro
+            </div>
+        }
 
-        <div class="input-group mb-3">
-            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-            <input type="password" class="form-control" id="senha" name="senha" placeholder="Digite sua senha" required>
-            <button class="btn btn-outline-secondary" type="button" onclick="toggleSenha()">
-                <i class="bi bi-eye-fill" id="iconeSenha"></i>
+        <form asp-action="Index" method="post">
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700 font-semibold">E-mail</label>
+                <input type="email" name="email" id="email"
+                       class="w-full mt-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-400"
+                       required />
+            </div>
+
+            <div class="mb-6">
+                <label for="senha" class="block text-gray-700 font-semibold">Senha</label>
+                <input type="password" name="senha" id="senha"
+                       class="w-full mt-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-400"
+                       required />
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                Entrar
             </button>
-            <div class="invalid-feedback">A senha é obrigatória.</div>
-        </div>
-
-        <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Entrar</button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
-
-@section Scripts {
-        <script>
-
-            (function () {
-                'use strict';
-                const forms = document.querySelectorAll('.needs-validation');
-                Array.from(forms).forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            })();
-
-            function toggleSenha() {
-                const input = document.getElementById("senha");
-                const icone = document.getElementById("iconeSenha");
-                if (input.type === "password") {
-                    input.type = "text";
-                    icone.classList.remove("bi-eye-fill");
-                    icone.classList.add("bi-eye-slash-fill");
-                } else {
-                    input.type = "password";
-                    icone.classList.remove("bi-eye-slash-fill");
-                    icone.classList.add("bi-eye-fill");
-                }
-            }
-        </script>
-}

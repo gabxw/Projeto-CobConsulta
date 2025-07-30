@@ -16,6 +16,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Registre o serviço IBillingService
 builder.Services.AddScoped<IBillingService, BillingService>();
 
+builder.Services.AddHttpContextAccessor();
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 Console.WriteLine($"Connection string usada: {connectionString}");
 

@@ -4,6 +4,10 @@
     ViewBag.ActiveMenuItem = Model.ActiveMenuItem;
 }
 
+
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
 <div class="font-sans antialiased text-gray-800 bg-gray-50">
     <!-- Header/Navbar -->
     <header class="sticky top-0 z-50 bg-white shadow-md">
@@ -22,7 +26,22 @@
                 <a href="#contato" class="text-gray-600 hover:text-blue-600 transition">Contato</a>
             </nav>
             <div class="flex items-center space-x-4">
-                <a href="#" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Acessar</a>
+                @if (HttpContextAccessor.HttpContext.Session.GetString("Tipo") != null)
+                {
+                    <form asp-controller="Login" asp-action="Logout" method="post">
+                        <button type="submit"
+                                class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                            Sair
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-controller="Login" asp-action="Index"
+                       class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                        Acessar
+                    </a>
+                }
                 <button class="md:hidden text-gray-600">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
