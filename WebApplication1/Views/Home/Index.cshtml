@@ -8,49 +8,6 @@
 @using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
 
-<div class="font-sans antialiased text-gray-800 bg-gray-50">
-    <!-- Header/Navbar -->
-    <header class="sticky top-0 z-50 bg-white shadow-md">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-file-invoice-dollar text-white text-xl"></i>
-                </div>
-                <span class="text-xl font-bold text-gray-800">CobConsulta</span>
-            </div>
-            <nav class="hidden md:flex space-x-8">
-                <a href="#" class="text-blue-600 font-medium hover:text-blue-800 transition">Início</a>
-                <a href="#empresa" class="text-gray-600 hover:text-blue-600 transition">Para Empresas</a>
-                <a href="#cliente" class="text-gray-600 hover:text-blue-600 transition">Para Clientes</a>
-                <a href="#faq" class="text-gray-600 hover:text-blue-600 transition">Dúvidas</a>
-                <a href="#contato" class="text-gray-600 hover:text-blue-600 transition">Contato</a>
-            </nav>
-            <div class="flex items-center space-x-4">
-                @if (Context.Session.GetString("Tipo") != null)
-                {
-                    <form asp-controller="Login" asp-action="Sair" method="post">
-                        <button type="submit"
-                                class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200">
-                            Sair
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <a asp-controller="Login" asp-action="Index"
-                       class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">
-                        Acessar
-                    </a>
-                }
-
-
-                <button class="md:hidden text-gray-600">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-            </div>
-        </div>
-    </header>
-
     <!-- Hero Section -->
     <section class="hero-pattern py-16 md:py-24">
         <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
