@@ -1,5 +1,94 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<WebApplication1.Models.Devedor>
 @{
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Devedores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col">
+            <div class="p-6 text-xl font-bold border-b border-gray-700">
+                💼 Empresa
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <a asp-action="Dashboard" class="flex items-center px-4 py-2 rounded hover:bg-gray-700 transition">
+                    📊 <span class="ml-2">Dashboard</span>
+                </a>
+                <a asp-action="Devedores" class="flex items-center px-4 py-2 rounded bg-gray-800">
+                    📋 <span class="ml-2">Devedores</span>
+                </a>
+                <a asp-action="Cobrancas" class="flex items-center px-4 py-2 rounded hover:bg-gray-700 transition">
+                    💰 <span class="ml-2">Cobranças</span>
+                </a>
+                <a asp-action="Funcionarios" class="flex items-center px-4 py-2 rounded hover:bg-gray-700 transition">
+                    👨‍💼 <span class="ml-2">Funcionários</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-700">
+                <a asp-controller="Login" asp-action="Sair" class="block text-red-400 hover:text-red-200 transition">
+                    🚪 Sair
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="flex-1 p-6 overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Devedores</h1>
+                    <p class="text-gray-500">Lista de clientes inadimplentes</p>
+                </div>
+                <a asp-action="Cadastrar" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    + Novo Devedor
+                </a>
+            </div>
+
+            <!-- Tabela -->
+            <div class="bg-white shadow rounded-lg overflow-hidden">
+                <table class="min-w-full table-auto">
+                    <thead class="bg-gray-200 text-gray-700">
+                        <tr>
+                            <th class="px-6 py-3 text-left">Nome</th>
+                            <th class="px-6 py-3 text-left">Email</th>
+                            <th class="px-6 py-3 text-left">CPF</th>
+                            <th class="px-6 py-3 text-left">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var d in Model)
+                            {
+                                <tr class="border-b">
+                                    <td class="px-6 py-3">@d.Name</td>
+                                    <td class="px-6 py-3">@d.Email</td>
+                                    <td class="px-6 py-3">@d.Cpf</td>
+                                    <td class="px-6 py-3 space-x-2">
+                                        <a asp-action="Editar" asp-route-id="@d.Id" class="text-blue-600 hover:underline">Editar</a>
+                                        <a asp-action="Excluir" asp-route-id="@d.Id" class="text-red-600 hover:underline">Excluir</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">Nenhum devedor cadastrado.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

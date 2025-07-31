@@ -1,46 +1,60 @@
 ﻿@{
-    ViewData["Title"] = "Dashboard da Empresa";
-    Layout = null; // para usar Tailwind direto (ou use seu layout se já estiver com Tailwind nele)
+    Layout = null;
 }
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="utf-8">
-    <title>Painel da Empresa</title>
+    <meta charset="UTF-8">
+    <title>Dashboard da Empresa</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
 
-    <div class="flex min-h-screen">
+    <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
-        <aside class="w-64 bg-white shadow-md">
-            <div class="p-4 text-lg font-bold border-b">Sistema Cobrança</div>
-            <nav class="p-4 space-y-2">
-                <a asp-action="Dashboard" class="block px-4 py-2 rounded hover:bg-gray-100">📊 Dashboard</a>
-                <a asp-action="Devedores" class="block px-4 py-2 rounded hover:bg-gray-100">📋 Devedores</a>
-                <a asp-action="Cobrancas" class="block px-4 py-2 rounded hover:bg-gray-100">💰 Cobranças</a>
-                <a asp-action="Funcionarios" class="block px-4 py-2 rounded hover:bg-gray-100">👨‍💼 Funcionários</a>
-                <a asp-controller="Login" asp-action="Sair" class="block px-4 py-2 rounded hover:bg-red-100 text-red-600">🚪 Sair</a>
+        <aside class="w-64 bg-gray-900 text-white flex flex-col">
+            <div class="p-6 text-xl font-bold border-b border-gray-700">
+                💼 Empresa
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <a asp-action="Dashboard" class="flex items-center px-4 py-2 rounded hover:bg-gray-700 transition">
+                    📊 <span class="ml-2">Dashboard</span>
+                </a>
+                <a asp-action="Devedores" class="flex items-center px-4 py-2 rounded hover:bg-gray-700 transition">
+                    📋 <span class="ml-2">Devedores</span>
+                </a>
+                <a asp-action="Cobrancas" class="flex items-center px-4 py-2 rounded hover:bg-gray-700 transition">
+                    💰 <span class="ml-2">Cobranças</span>
+                </a>
             </nav>
+            <div class="p-4 border-t border-gray-700">
+                <a asp-controller="Login" asp-action="Sair" class="block text-red-400 hover:text-red-200 transition">
+                    🚪 Sair
+                </a>
+            </div>
         </aside>
 
-        <!-- Main content -->
-        <main class="flex-1 p-6">
-            <h1 class="text-2xl font-semibold mb-6">Dashboard da Empresa</h1>
+        <!-- Main -->
+        <main class="flex-1 p-6 overflow-y-auto">
+            <header class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Painel da Empresa</h1>
+                <p class="text-gray-500">Resumo das cobranças e usuários</p>
+            </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white shadow rounded p-4">
-                    <h2 class="text-sm text-gray-500">Devedores</h2>
-                    <p class="text-2xl font-bold">12</p>
+            <!-- Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow p-5 border-l-4 border-blue-500">
+                    <p class="text-sm text-gray-500">Total de Devedores</p>
+                    <p class="text-2xl font-semibold text-gray-800 mt-1">12</p>
                 </div>
-                <div class="bg-white shadow rounded p-4">
-                    <h2 class="text-sm text-gray-500">Cobranças Pendentes</h2>
-                    <p class="text-2xl font-bold">R$ 3.250,00</p>
+                <div class="bg-white rounded-lg shadow p-5 border-l-4 border-yellow-500">
+                    <p class="text-sm text-gray-500">Cobranças Pendentes</p>
+                    <p class="text-2xl font-semibold text-gray-800 mt-1">R$ 3.250,00</p>
                 </div>
-                <div class="bg-white shadow rounded p-4">
-                    <h2 class="text-sm text-gray-500">Cobranças Pagas</h2>
-                    <p class="text-2xl font-bold">R$ 1.750,00</p>
+                <div class="bg-white rounded-lg shadow p-5 border-l-4 border-green-500">
+                    <p class="text-sm text-gray-500">Cobranças Pagas</p>
+                    <p class="text-2xl font-semibold text-gray-800 mt-1">R$ 1.750,00</p>
                 </div>
             </div>
         </main>

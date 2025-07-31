@@ -44,7 +44,7 @@ namespace WebApplication1.Controllers
                 HttpContext.Session.SetString("Tipo", "Empresa");
                 HttpContext.Session.SetString("Nome", empresa.Nome);
                 HttpContext.Session.SetInt32("EmpresaId", empresa.Id); // <-- nome específico
-                return RedirectToAction("Index", "Divida");
+                return RedirectToAction("Dashboard", "Empresa");
             }
 
             // verifica se é devedor
