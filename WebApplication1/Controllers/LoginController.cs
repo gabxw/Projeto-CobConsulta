@@ -20,6 +20,11 @@ namespace WebApplication1.Controllers
             return View();
         }
 
+        public IActionResult AcessoNegado()
+        {
+            return View();
+        }
+
         // POST: /Login
         [HttpPost]
         public IActionResult Index(string email, string senha)
