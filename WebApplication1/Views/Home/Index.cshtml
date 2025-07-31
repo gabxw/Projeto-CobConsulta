@@ -26,9 +26,9 @@
                 <a href="#contato" class="text-gray-600 hover:text-blue-600 transition">Contato</a>
             </nav>
             <div class="flex items-center space-x-4">
-                @if (HttpContextAccessor.HttpContext.Session.GetString("Tipo") != null)
+                @if (Context.Session.GetString("Tipo") != null)
                 {
-                    <form asp-controller="Login" asp-action="Logout" method="post">
+                    <form asp-controller="Login" asp-action="Sair" method="post">
                         <button type="submit"
                                 class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200">
                             Sair
@@ -42,6 +42,8 @@
                         Acessar
                     </a>
                 }
+
+
                 <button class="md:hidden text-gray-600">
                     <i class="fas fa-bars text-xl"></i>
                 </button>

@@ -1,16 +1,55 @@
-﻿<head>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WebApplication1</title>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/output.css" />
-
-    <link rel="stylesheet" href="~/WebApplication1.styles.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - CobConsulta</title>
+    <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
 </head>
+<body class="bg-gray-100 text-gray-900 font-sans">
 
-    @RenderBody()
-        
- 
+    <header class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-file-invoice-dollar text-white text-xl"></i>
+                </div>
+                <span class="text-xl font-bold text-gray-800">CobConsulta</span>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <a href="/" class="text-blue-600 font-medium hover:text-blue-800 transition">Início</a>
+                <a href="#empresa" class="text-gray-600 hover:text-blue-600 transition">Para Empresas</a>
+                <a href="#cliente" class="text-gray-600 hover:text-blue-600 transition">Para Clientes</a>
+                <a href="#faq" class="text-gray-600 hover:text-blue-600 transition">Dúvidas</a>
+                <a href="#contato" class="text-gray-600 hover:text-blue-600 transition">Contato</a>
+
+                @if (HttpContextAccessor.HttpContext.Session.GetString("Tipo") != null)
+                {
+                        <form asp-controller="Login" asp-action="Logout" method="post">
+                            <button type="submit"
+                                    class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                                Sair
+                            </button>
+                        </form>
+                }
+                else
+                {
+                        <a asp-controller="Login" asp-action="Index"
+                           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                            Acessar
+                        </a>
+                }
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        @RenderBody()
+    </main>
 
     @RenderSection("Scripts", required: false)
-
+</body>
+</html>
