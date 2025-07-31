@@ -1,61 +1,64 @@
 ﻿@{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Cadastro";
 }
 
-<div class="container mt-5" style="max-width: 400px;">
-    <h2 class="text-center mb-4">Login</h2>
+<div class="flex items-center justify-center min-h-screen px-6 py-12 lg:px-8">
+  <div class="w-full max-w-md space-y-8">
+    <div>
+      <img class="mx-auto h-10 w-auto" src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" alt="">
+      <h2 class="mt-6 text-center text-2xl font-bold tracking-tight text-gray-900">Entra na sua conta</h2>
+    </div>
 
-    <form method="post" class="needs-validation" novalidate>
-        <div class="input-group mb-3">
-            <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-            <input type="email" class="form-control" name="email" placeholder="Digite seu e-mail" required>
-            <div class="invalid-feedback">Por favor, insira um e-mail válido.</div>
-        </div>
 
-        <div class="input-group mb-3">
-            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-            <input type="password" class="form-control" id="senha" name="senha" placeholder="Digite sua senha" required>
-            <button class="btn btn-outline-secondary" type="button" onclick="toggleSenha()">
-                <i class="bi bi-eye-fill" id="iconeSenha"></i>
-            </button>
-            <div class="invalid-feedback">A senha é obrigatória.</div>
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
+    <form action="#" method="POST" class="space-y-6 bg-white p-6 rounded-lg shadow-md">
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Nome completo</label>
+        <div class="mt-1">
+          <input id="name" type="text" name="name" required autocomplete="name" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
         </div>
+      </div>
 
-        <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Entrar</button>
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Endereço de email</label>
+        <div class="mt-1">
+          <input id="email" type="email" name="email" required autocomplete="email" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
         </div>
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
+        <div class="mt-1">
+          <input id="password" type="password" name="password" required autocomplete="new-password" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-8 py-2 text-sm font-semibold text-dark shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Cadastrar</button>
+      </div>
     </form>
+
+    <p class="mt-10 text-center text-sm text-gray-500">
+      Já tem uma conta?
+      <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">Faça login</a>
+    </p>
+  </div>
 </div>
 
 @section Scripts {
-        <script>
-
-            (function () {
-                'use strict';
-                const forms = document.querySelectorAll('.needs-validation');
-                Array.from(forms).forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            })();
-
-            function toggleSenha() {
-                const input = document.getElementById("senha");
-                const icone = document.getElementById("iconeSenha");
-                if (input.type === "password") {
-                    input.type = "text";
-                    icone.classList.remove("bi-eye-fill");
-                    icone.classList.add("bi-eye-slash-fill");
-                } else {
-                    input.type = "password";
-                    icone.classList.remove("bi-eye-slash-fill");
-                    icone.classList.add("bi-eye-fill");
-                }
-            }
-        </script>
+    <script>
+        (function () {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
 }
