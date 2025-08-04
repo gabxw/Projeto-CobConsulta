@@ -1,64 +1,236 @@
-﻿@{
-    Layout = null;
+﻿@model WebApplication1.Models.EmpresaDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard - " + Model.NomeEmpresa;
 }
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard da Empresa</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
 
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-gray-900 text-white flex flex-col">
-            <div class="p-6 text-xl font-bold border-b border-gray-700">
-                💼 Empresa
-            </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <a asp-action="Dashboard" class="flex items-center px-4 py-2 rounded hover:bg-gray-700 transition">
-                    📊 <span class="ml-2">Dashboard</span>
-                </a>
-                <a asp-action="Devedores" class="flex items-center px-4 py-2 rounded hover:bg-gray-700 transition">
-                    📋 <span class="ml-2">Devedores</span>
-                </a>
-                <a asp-action="Cobrancas" class="flex items-center px-4 py-2 rounded hover:bg-gray-700 transition">
-                    💰 <span class="ml-2">Cobranças</span>
-                </a>
-            </nav>
-            <div class="p-4 border-t border-gray-700">
-                <a asp-controller="Login" asp-action="Sair" class="block text-red-400 hover:text-red-200 transition">
-                    🚪 Sair
-                </a>
-            </div>
-        </aside>
+<div class="max-w-7xl mx-auto py-8 px-4">
+    <h1 class="text-4xl font-bold mb-4">Dashboard - @Model.NomeEmpresa</h1>
 
-        <!-- Main -->
-        <main class="flex-1 p-6 overflow-y-auto">
-            <header class="mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">Painel da Empresa</h1>
-                <p class="text-gray-500">Resumo das cobranças e usuários</p>
-            </header>
-
-            <!-- Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white rounded-lg shadow p-5 border-l-4 border-blue-500">
-                    <p class="text-sm text-gray-500">Total de Devedores</p>
-                    <p class="text-2xl font-semibold text-gray-800 mt-1">12</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-5 border-l-4 border-yellow-500">
-                    <p class="text-sm text-gray-500">Cobranças Pendentes</p>
-                    <p class="text-2xl font-semibold text-gray-800 mt-1">R$ 3.250,00</p>
-                </div>
-                <div class="bg-white rounded-lg shadow p-5 border-l-4 border-green-500">
-                    <p class="text-sm text-gray-500">Cobranças Pagas</p>
-                    <p class="text-2xl font-semibold text-gray-800 mt-1">R$ 1.750,00</p>
+    <!-- Alertas -->
+    @if (Model.Alertas.Any())
+    {
+            <div class="mb-6 bg-red-50 border-l-4 border-red-600 p-4 rounded">
+                <div class="font-semibold text-red-700 mb-2">Atenção: dívidas muito atrasadas</div>
+                <div class="space-y-2">
+                @foreach (var a in Model.Alertas)
+                {
+                            <div class="flex justify-between items-center">
+                                <div class="text-sm">
+                                    <span class="font-medium">@a.Titulo</span> de <span class="underline">@a.DevedorNome</span> está com <span class="text-red-600">@a.DiasAtraso dias</span> de atraso (R$ @a.Valor.ToString("N2")).
+                                </div>
+                                <div class="flex gap-2">
+                                    <a href="#" 
+                                       class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs">
+                                        Cobrar agora
+                                    </a>
+                                </div>
+                            </div>
+                }
                 </div>
             </div>
-        </main>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- KPIs coloridos (duas colunas) -->
+        <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="bg-yellow-50 rounded-lg shadow p-5">
+                <div class="text-xs font-semibold text-gray-600 uppercase">Devedores Totais</div>
+                <div class="mt-1 text-2xl font-bold">@Model.TotalDevedores</div>
+            </div>
+            <div class="bg-red-50 rounded-lg shadow p-5">
+                <div class="text-xs font-semibold text-gray-600 uppercase">Com Pendência</div>
+                <div class="mt-1 text-2xl font-bold">@Model.ComPendencia</div>
+                <div class="text-xs text-indigo-600 mt-1">
+                        @((Model.TotalDevedores == 0) ? "0%" : $"{Math.Round(100.0 * Model.ComPendencia / Model.TotalDevedores, 1)}% com débito")
+                </div>
+            </div>
+            <div class="bg-green-50 rounded-lg shadow p-5">
+                <div class="text-xs font-semibold text-gray-600 uppercase">Sem Pendência</div>
+                <div class="mt-1 text-2xl font-bold">@Model.SemPendencia</div>
+            </div>
+            <div class="bg-green-100 rounded-lg shadow p-5">
+                <div class="text-xs font-semibold text-gray-600 uppercase">Faturamento (mês)</div>
+                <div class="mt-1 text-2xl font-bold">R$ @Model.FaturamentoMesAtual.ToString("N2")</div>
+                <div class="text-xs mt-1">
+                        @if (Model.FaturamentoMesAnterior > 0)
+                        {
+                            var diff = Model.FaturamentoMesAtual - Model.FaturamentoMesAnterior;
+                            var sinal = diff >= 0 ? "+" : "-";
+                            var perc = Math.Abs(diff) / (Model.FaturamentoMesAnterior == 0 ? 1 : Model.FaturamentoMesAnterior) * 100;
+                            <span class="text-sm @(diff >= 0 ? "text-green-600" : "text-red-600")">
+                                @sinal R$@Math.Abs(diff).ToString("N2") (@perc.ToString("F1")%)
+                            </span>
+                        }
+                </div>
+            </div>
+            <div class="bg-red-100 rounded-lg shadow p-5">
+                <div class="text-xs font-semibold text-gray-600 uppercase">Valor em Aberto</div>
+                <div class="mt-1 text-2xl font-bold text-red-600">R$ @Model.ValorEmAberto.ToString("N2")</div>
+            </div>
+        </div>
+
+        <!-- Gráfico de status menor e ao lado -->
+        <div class="bg-white rounded-lg shadow p-6 flex flex-col">
+            <h2 class="text-lg font-semibold mb-3">Status das Cobranças</h2>
+            <div class="relative" style="height:220px; width:100%;">
+                <canvas id="statusChart" class="w-full h-full"></canvas>
+            </div>
+        </div>
     </div>
 
-</body>
-</html>
+
+    <!-- Notificações recentes -->
+    @if (Model.NotificacoesRecentes.Any())
+    {
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h3 class="text-lg font-semibold mb-3">Notificações Recentes</h3>
+            <ul class="space-y-2">
+                @foreach (var n in Model.NotificacoesRecentes.Take(5))
+                {
+                        <li class="flex justify-between">
+                            <div class="text-sm">@n</div>
+                        </li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Top Devedores e Aging -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold mb-4">Top Devedores</h2>
+            <ul class="space-y-3">
+                @foreach (var d in Model.TopDevedores)
+                {
+                        <li class="flex justify-between items-center border-b pb-2">
+                            <div>
+                                <div class="font-medium">@d.Devedor.Name</div>
+                                <div class="text-xs text-gray-500">@d.Devedor.Email</div>
+                            </div>
+                            <div class="font-bold">R$ @d.TotalDevido.ToString("N2")</div>
+                        </li>
+                }
+                @if (!Model.TopDevedores.Any())
+                {
+                        <li class="text-sm text-gray-500">Nenhum devedor com dívida em aberto.</li>
+                }
+            </ul>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold mb-4">Aging (vencidas)</h2>
+            <canvas id="agingChart" class="w-full" style="max-height:220px;"></canvas>
+        </div>
+    </div>
+
+    <!-- Cobranças Recentes e Indicadores Extras -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Cobranças Recentes</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-2">Título</th>
+                            <th class="p-2">Devedor</th>
+                            <th class="p-2">Valor</th>
+                            <th class="p-2">Vencimento</th>
+                            <th class="p-2">Pagamento</th>
+                            <th class="p-2">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in Model.Recentes)
+                        {
+                                <tr class="border-b">
+                                    <td class="p-2">@d.Titulo</td>
+                                    <td class="p-2">@d.Devedor?.Name</td>
+                                    <td class="p-2">R$ @d.Valor.ToString("N2")</td>
+                                    <td class="p-2">
+                                    @(d.DataVencimento.HasValue ? d.DataVencimento.Value.ToString("dd/MM/yyyy") : "—")
+                                    </td>
+                                    <td class="p-2">
+                                    @(d.DataPagamento.HasValue ? d.DataPagamento.Value.ToString("dd/MM/yyyy") : "—")
+                                    </td>
+                                    <td class="p-2">
+                                        <span class="px-2 py-1 rounded text-xs font-semibold 
+                                        @(d.Status == "Quitado" ? "bg-green-100 text-green-800" :
+                                          d.Status == "Vencido" ? "bg-red-100 text-red-800" :
+                                          "bg-yellow-100 text-yellow-800")">
+                                        @d.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                        }
+                        @if (!Model.Recentes.Any())
+                        {
+                                <tr>
+                                    <td colspan="6" class="p-4 text-center text-gray-500">Nenhuma cobrança recente.</td>
+                                </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">Indicadores Extras</h3>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="flex justify-between">
+                    <div class="text-sm text-gray-600">Taxa de Recuperação</div>
+                    <div class="font-bold">@Model.TaxaRecuperacaoPercent.ToString("F1") %</div>
+                </div>
+                <div class="flex justify-between">
+                    <div class="text-sm text-gray-600">Tempo médio de pagamento</div>
+                    <div class="font-bold">@Model.TempoMedioPagamentoDias.ToString("F1") dias</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // status doughnut
+    const statusCtx = document.getElementById('statusChart');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pendentes', 'Atrasadas', 'Quitadas'],
+            datasets: [{
+                data: [@Model.Pendentes, @Model.Atrasadas, @Model.Quitadas],
+                backgroundColor: ['#f59e0b', '#ef4444', '#10b981']
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { position: 'bottom' }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+
+    // aging
+    const agingCtx = document.getElementById('agingChart');
+    new Chart(agingCtx, {
+        type: 'bar',
+        data: {
+            labels: ['0-30', '31-60', '>60'],
+            datasets: [{
+                label: 'Valor vencido',
+                data: [@Model.Aging["0-30"], @Model.Aging["31-60"], @Model.Aging[">60"]],
+                backgroundColor: ['#f87171', '#fbbf24', '#f59e0b']
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+</script>
