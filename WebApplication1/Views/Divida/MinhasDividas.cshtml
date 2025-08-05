@@ -1,4 +1,6 @@
-﻿@model List<WebApplication1.Models.Divida>
+﻿@using System.Text.Json
+
+@model List<WebApplication1.Models.Divida>
 @{
     ViewData["Title"] = "Minhas Dívidas";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -54,14 +56,15 @@
                         <span class="px-2 py-1 rounded-full text-xs font-semibold @statusColor">@item.Status</span>
                     </td>
                     <td class="px-4 py-2 space-x-2">
-                        <button onclick="showDetails(@item.Id)" class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                        <button onclick="showDetails(@item.Id)"
+                            class="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
                             Detalhes
                         </button>
 
                         @if (item.Status != "Pago")
                         {
-                            <button onclick="showPay(@item.Id)" class="bg-green-600 hover:bg-green-700 text-white border border-green-700 px-3 py-1 rounded text-sm">Pagar</button>
-
+                            <button onclick="showPay(@item.Id)"
+                                class="bg-green-600 hover:bg-green-700 text-white border border-green-700 px-3 py-1 rounded text-sm">Pagar</button>
                         }
                     </td>
                 </tr>
@@ -70,22 +73,20 @@
     </table>
 </div>
 
-<!-- Modal para Detalhes -->
-<!-- Modal para Detalhes -->
-<div id="detailsModal" class="fixed hidden inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out">
+<div id="detailsModal"
+    class="fixed hidden inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out">
     <div class="bg-white p-6 rounded-lg w-full max-w-xl shadow-lg">
         <h3 class="text-lg font-bold mb-4">Detalhes da Dívida</h3>
         <div id="detailsContent" class="text-sm text-gray-700"></div>
         <div class="mt-4 text-right">
-            <button onclick="closeModal('detailsModal')" class="bg-gray-600 hover:bg-gray-800 text-white px-4 py-2 rounded">
+            <button onclick="closeModal('detailsModal')"
+                class="bg-gray-600 hover:bg-gray-800 text-white px-4 py-2 rounded">
                 Fechar
             </button>
         </div>
     </div>
 </div>
 
-
-<!-- Modal para Pagar -->
 <div id="payModal" class="fixed hidden inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white p-6 rounded-lg w-full max-w-md">
         <h3 class="text-lg font-bold mb-4">Confirmar Pagamento</h3>
@@ -93,8 +94,10 @@
             <input type="hidden" name="id" id="payId" />
             <p class="text-gray-700 text-sm">Tem certeza que deseja pagar esta dívida?</p>
             <div class="mt-4 text-right">
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Confirmar</button>
-                <button type="button" onclick="closeModal('payModal')" class="ml-2 bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded">Cancelar</button>
+                <button type="submit"
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Confirmar</button>
+                <button type="button" onclick="closeModal('payModal')"
+                    class="ml-2 bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded">Cancelar</button>
             </div>
         </form>
     </div>
@@ -102,31 +105,33 @@
 
 @section Scripts {
     <script>
-                function showDetails(id) {
-            const dividas = @Html.Raw(Json.Serialize(ViewBag.DividasJson));
-
-
-            const item = dividas.find(x => x.Id === id);
+        function showDetails(id) {
+            const dividas = @Html.Raw(ViewBag.DividasJson); // já é um array JSON válido
+            console.log(dividas);
+            const item = dividas.find(x => x.id === id);
 
             if (!item) return;
 
+            function formatDate(dateStr) {
+                if (!dateStr) return '-';
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('pt-BR');
+            }
+
             document.getElementById('detailsContent').innerHTML = `
-                <div class="space-y-2">
-                    <p><strong>Título:</strong> ${item.Titulo}</p>
-                    <p><strong>Descrição:</strong> ${item.Descricao}</p>
-                    <p><strong>Valor:</strong> R$ ${item.Valor.toFixed(2)}</p>
-                    <p><strong>Empresa:</strong> ${item.Empresa.Nome}</p>
-                    <p><strong>Status:</strong> ${item.Status}</p>
-                    <p><strong>Data de Vencimento:</strong> ${item.DataVencimento ?? '-'}</p>
-                    <p><strong>Data de Pagamento:</strong> ${item.DataPagamento ?? '-'}</p>
-                </div>
-            `;
+                    <div class="space-y-2">
+                        <p><strong>Título:</strong> ${item.titulo}</p>
+                        <p><strong>Descrição:</strong> ${item.descricao}</p>
+                        <p><strong>Valor:</strong> R$ ${item.valor.toFixed(2)}</p>
+                        <p><strong>Empresa:</strong> ${item.empresa?.nome ?? '-'}</p>
+                        <p><strong>Status:</strong> ${item.status}</p>
+                        <p><strong>Data de Vencimento:</strong> ${formatDate(item.dataVencimento)}</p>
+                        <p><strong>Data de Pagamento:</strong> ${formatDate(item.dataPagamento)}</p>
+                    </div>
+                `;
 
             document.getElementById('detailsModal').classList.remove('hidden');
         }
-
-    
-
 
         function showPay(id) {
             document.getElementById('payId').value = id;

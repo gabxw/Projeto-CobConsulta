@@ -1,13 +1,16 @@
 ﻿@using Microsoft.AspNetCore.Http
+@using System.Text.Json
 @inject IHttpContextAccessor HttpContextAccessor
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CobConsulta</title>
     <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
 </head>
+
 <body class="bg-gray-100 font-sans text-gray-900">
 
     <header class="sticky top-0 z-50 bg-white shadow-md">
@@ -30,15 +33,15 @@
                 {
                     <form asp-controller="Login" asp-action="Sair" method="post">
                         <button type="submit"
-                                class="rounded bg-red-500 px-4 py-2 font-bold text-white transition duration-200 hover:bg-red-700">
-                            Sair 
+                            class="rounded bg-red-500 px-4 py-2 font-bold text-white transition duration-200 hover:bg-red-700">
+                            Sair
                         </button>
                     </form>
                 }
                 else
                 {
                     <a asp-controller="Login" asp-action="Index"
-                       class="rounded bg-blue-600 px-4 py-2 font-bold text-white transition duration-200 hover:bg-blue-700">
+                        class="rounded bg-blue-600 px-4 py-2 font-bold text-white transition duration-200 hover:bg-blue-700">
                         Acessar
                     </a>
                 }
@@ -49,10 +52,11 @@
         </div>
     </header>
 
- 
-        @RenderBody()
+
+    @RenderBody()
     </main>
 
     @RenderSection("Scripts", required: false)
 </body>
+
 </html>
