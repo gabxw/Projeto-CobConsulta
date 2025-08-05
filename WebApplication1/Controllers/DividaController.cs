@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models;
+using System.Text.Json; // certifique-se de importar
+
+
+
 
 namespace WebApplication1.Controllers
 {
@@ -176,6 +180,23 @@ namespace WebApplication1.Controllers
             return View(divida);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Pagar(int id)
+        {
+            var divida = await _context.Dividas.FindAsync(id);
+            if (divida == null || divida.Status == "Pago")
+                return NotFound();
+
+            divida.Status = "Pago";
+            divida.DataPagamento = DateTime.Now;
+
+            _context.Update(divida);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(MinhasDividas));
+        }
+
+
         // POST: Divida/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -203,12 +224,11 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Divida/MinhasDividas
+        // GET: Divida/MinhasDividas
         public async Task<IActionResult> MinhasDividas()
         {
             if (HttpContext.Session.GetString("Tipo") != "Devedor")
-            {
                 return RedirectToAction("AcessoNegado", "Login");
-            }
 
             int devedorId = HttpContext.Session.GetInt32("DevedorId") ?? 0;
 
@@ -217,8 +237,26 @@ namespace WebApplication1.Controllers
                 .Where(d => d.DevedorID == devedorId)
                 .ToListAsync();
 
+            // Cria uma lista simplificada (DTO) para evitar referências circulares
+            var dividasSimplificadas = dividas.Select(d => new
+            {
+                d.Id,
+                d.Titulo,
+                d.Descricao,
+                d.Valor,
+                d.Status,
+                DataVencimento = d.DataVencimento?.ToString("yyyy-MM-dd"),
+                DataPagamento = d.DataPagamento?.ToString("yyyy-MM-dd"),
+                Empresa = new
+                {
+                    d.Empresa.Nome
+                }
+            }).ToList();
+
+            ViewBag.DividasJson = dividasSimplificadas;
             return View(dividas);
         }
+
 
 
     }
