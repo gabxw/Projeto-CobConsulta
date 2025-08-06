@@ -21,6 +21,9 @@ namespace WebApplication1.Models
         //[Required(ErrorMessage = "A data de pagamento é obrigatória")]
         public DateTime? DataPagamento { get; set; }
 
+        [Required(ErrorMessage = "A data de criação é obrigatória")]
+        public DateTime? DataCriacao { get; set; } = DateTime.Now;
+
         [Required(ErrorMessage = "O status é obrigatório")]
         public string Status { get; set; } = "Pendente";
         public int DevedorID { get; set; }

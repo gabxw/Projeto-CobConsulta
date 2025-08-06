@@ -127,13 +127,17 @@ namespace WebApplication1.Controllers
                 : 0;
 
             var pagamentosQuitados = dividasDaEmpresa
-            .Where(d => (d.Status == "Quitado" || d.Status == "Finalizado")
-                        && d.DataPagamento.HasValue
-                        && d.DataVencimento.HasValue)
-            .Select(d => Math.Abs((d.DataPagamento.Value - d.DataVencimento.Value).TotalDays))
+            .Where(d =>
+                (d.Status == "Quitado" || d.Status == "Finalizado") &&
+                d.DataPagamento.HasValue &&
+                d.DataCriacao.HasValue &&
+                d.DataCriacao.Value > DateTime.MinValue)
+            .Select(d => (d.DataPagamento.Value - d.DataCriacao.Value).TotalDays)
             .ToList();
 
             double mediaDias = pagamentosQuitados.Any() ? pagamentosQuitados.Average() : 0;
+
+
 
             var primeiroDiaMesAtual = new DateTime(hoje.Year, hoje.Month, 1);
             var primeiroDiaMesAnterior = primeiroDiaMesAtual.AddMonths(-1);

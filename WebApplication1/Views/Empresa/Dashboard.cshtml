@@ -124,7 +124,7 @@
         <!-- Gráfico: Tempo Médio de Pagamento -->
         <div class="rounded-lg bg-white p-6 shadow">
             <h2 class="mb-4 text-lg font-semibold">Tempo Médio de Pagamento</h2>
-            <canvas id="tempoMedioChart" class="w-full" style="max-height:220px;"></canvas>
+            <canvas id="TempoMedioChart" class="w-full" style="max-height:220px;"></canvas>
         </div>
 
         <div class="rounded-lg bg-white p-6 shadow">
@@ -136,9 +136,7 @@
     </div>
 
     <p class="text-sm text-gray-500">
-        Os clientes pagam em média <strong>
-            @(Model.TempoMedioPagamentoDias >= 0 ? $"{Model.TempoMedioPagamentoDias} dias após" : $"{Math.Abs(Model.TempoMedioPagamentoDias)} dias antes")
-        </strong> do vencimento.
+        Em média, os clientes pagam <strong>@Model.TempoMedioPagamentoDias dias</strong> após a criação da dívida.
     </p>
 
     <!-- Cobranças Recentes e Indicadores Extras lado a lado -->
