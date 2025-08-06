@@ -127,11 +127,11 @@ namespace WebApplication1.Controllers
                 : 0;
 
             var pagamentosQuitados = dividasDaEmpresa
-                .Where(d => (d.Status == "Quitado" || d.Status == "Finalizado")
-                            && d.DataPagamento.HasValue
-                            && d.DataVencimento.HasValue)
-                .Select(d => (d.DataPagamento.Value - d.DataVencimento.Value).TotalDays)
-                .ToList();
+            .Where(d => (d.Status == "Quitado" || d.Status == "Finalizado")
+                        && d.DataPagamento.HasValue
+                        && d.DataVencimento.HasValue)
+            .Select(d => Math.Abs((d.DataPagamento.Value - d.DataVencimento.Value).TotalDays))
+            .ToList();
 
             double mediaDias = pagamentosQuitados.Any() ? pagamentosQuitados.Average() : 0;
 
@@ -208,6 +208,7 @@ namespace WebApplication1.Controllers
 
             var empresa = await _context.Empresas.FindAsync(empresaId);
 
+
             var vm = new EmpresaDashboardViewModel
             {
                 TotalDevedores = totalDevedores,
@@ -246,12 +247,24 @@ namespace WebApplication1.Controllers
                 NotificacoesRecentes = notificacoes,
 
                 TaxaRecuperacaoPercent = Math.Round(taxaRecuperacao, 1),
-                TempoMedioPagamentoDias = (decimal)Math.Max(0, Math.Round(mediaDias, 1)),
+                TempoMedioPagamentoDias = (decimal)Math.Round(mediaDias, 1),
 
                 NomeEmpresa = empresa?.Nome ?? "Empresa"
+
             };
 
+            Console.WriteLine("Qtd de pagamentos analisados: " + pagamentosQuitados.Count);
+            foreach (var dias in pagamentosQuitados)
+            {
+                Console.WriteLine($"Diferença: {dias}");
+            }
+            Console.WriteLine("Média calculada: " + mediaDias);
+
+            Console.WriteLine($"Tempo médio de pagamento: {mediaDias}");
+
+
             return View(vm);
+
         }
 
     }

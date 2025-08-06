@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Dashboard - " + Model.NomeEmpresa;
 }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="mx-auto max-w-7xl px-4 py-8">
     <h1 class="mb-6 text-4xl font-bold">Dashboard - @Model.NomeEmpresa</h1>
@@ -79,14 +80,7 @@
 
         <!-- Coluna 3: Valores com toggle -->
         <div class="space-y-4">
-            <div class="flex flex-col justify-between space-y-1">
-                <span class="text-sm font-semibold text-gray-700 uppercase">Valores</span>
-                <div class="flex space-x-2">
-                    <button class="px-4 py-1 text-xs font-bold text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Total</button>
-                    <button class="px-4 py-1 text-xs font-bold text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Ano</button>
-                    <button class="px-4 py-1 text-xs font-bold text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Mês</button>
-                </div>
-            </div>
+           
             <div class="rounded-lg bg-yellow-50 p-5 shadow">
                 <div class="text-xs font-semibold text-gray-700 uppercase">Valor em Pendência</div>
                 <div class="mt-1 text-2xl font-bold text-yellow-800">R$ @Model.ValorPendente.ToString("N2")</div>
@@ -119,13 +113,20 @@
     }
 
     <!-- Gráficos principais lado a lado -->
-    <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div class="mb-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div class="flex flex-col rounded-lg bg-white p-6 shadow">
             <h2 class="mb-3 text-lg font-semibold">Status das Cobranças</h2>
             <div class="relative" style="height:260px; width:100%;">
                 <canvas id="statusChart" class="h-full w-full"></canvas>
             </div>
         </div>
+
+        <!-- Gráfico: Tempo Médio de Pagamento -->
+        <div class="rounded-lg bg-white p-6 shadow">
+            <h2 class="mb-4 text-lg font-semibold">Tempo Médio de Pagamento</h2>
+            <canvas id="tempoMedioChart" class="w-full" style="max-height:220px;"></canvas>
+        </div>
+
         <div class="rounded-lg bg-white p-6 shadow">
             <h2 class="mb-3 text-lg font-semibold">Aging (vencidas)</h2>
             <div class="relative" style="height:260px; width:100%;">
@@ -133,6 +134,12 @@
             </div>
         </div>
     </div>
+
+    <p class="text-sm text-gray-500">
+        Os clientes pagam em média <strong>
+            @(Model.TempoMedioPagamentoDias >= 0 ? $"{Model.TempoMedioPagamentoDias} dias após" : $"{Math.Abs(Model.TempoMedioPagamentoDias)} dias antes")
+        </strong> do vencimento.
+    </p>
 
     <!-- Cobranças Recentes e Indicadores Extras lado a lado -->
     <div class="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
@@ -255,6 +262,50 @@
             responsive: true,
             maintainAspectRatio: false,
         }
+    });
+
+        // tempo médio de pagamento
+           // Espera o DOM carregar
+    document.addEventListener("DOMContentLoaded", function () {
+        const mediaDias = parseFloat("@Model.TempoMedioPagamentoDias".replace(",", ".")); // Garante ponto decimal
+
+        const ctx = document.getElementById('TempoMedioChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Média de dias'],
+                datasets: [{
+                    label: 'Tempo médio',
+                    data: [mediaDias],
+                    backgroundColor: '#36A2EB',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return context.raw + ' dias';
+                            }
+                        }
+                    }
+                },
+                    scales: {
+                    x: {
+                        beginAtZero: false,
+                        min: -100, // ou algum valor que acomode o range negativo
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
     });
 
     // Aging bar
