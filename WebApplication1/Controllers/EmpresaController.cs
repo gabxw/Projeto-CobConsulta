@@ -244,40 +244,49 @@ namespace WebApplication1.Controllers
 
             int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
 
-            using var stream = new MemoryStream();
-            await excelFile.CopyToAsync(stream);
-            stream.Position = 0; // resetar a posição antes de ler
-
-            var resultado = ExcelImportHelper.ProcessarExcel(stream, empresaId);
-
-            if (resultado.Erros.Any())
+            try
             {
-                var vmErro = new ImportacaoDividaViewModel
+                using var stream = new MemoryStream();
+                await excelFile.CopyToAsync(stream);
+                stream.Position = 0; // resetar a posição antes de ler
+
+                var resultado = ExcelImportHelper.ProcessarExcel(stream, empresaId);
+
+                if (resultado.Erros.Any())
                 {
-                    Erros = resultado.Erros
+                    var vmErro = new ImportacaoDividaViewModel
+                    {
+                        Erros = resultado.Erros
+                    };
+                    return View("ImportarDividas", vmErro);
+                }
+
+                var dividasImportadas = resultado.Dividas.Select(d => new DividaImportada
+                {
+                    Nome = d.Devedor.Name,
+                    Email = d.Devedor.Email,
+                    Telefone = d.Devedor.Telefone,
+                    CPF = d.Devedor.Cpf,
+                    Titulo = d.Titulo,
+                    Descricao = d.Descricao,
+                    Valor = d.Valor,
+                    Status = d.Status,
+                    DataVencimento = d.DataVencimento ?? DateTime.Now
+                }).ToList();
+
+                var vm = new ImportacaoDividaViewModel
+                {
+                    Dividas = dividasImportadas
                 };
-                return View("ImportarDividas", vmErro);
+
+                return View("ConfirmarImportacao", vm);
             }
-
-            var dividasImportadas = resultado.Dividas.Select(d => new DividaImportada
+            catch (Exception ex)
             {
-                Nome = d.Devedor.Name,
-                Email = d.Devedor.Email,
-                Telefone = d.Devedor.Telefone,
-                CPF = d.Devedor.Cpf,
-                Titulo = d.Titulo,
-                Descricao = d.Descricao,
-                Valor = d.Valor,
-                Status = d.Status,
-                DataVencimento = d.DataVencimento ?? DateTime.Now
-            }).ToList();
-
-            var vm = new ImportacaoDividaViewModel
-            {
-                Dividas = dividasImportadas
-            };
-
-            return View("ConfirmarImportacao", vm);
+                // Aqui registraria no log, se quiser
+                ModelState.AddModelError("", $"Erro ao processar o arquivo: {ex.Message}");
+                return View();
+            }
         }
 
         [HttpPost]
