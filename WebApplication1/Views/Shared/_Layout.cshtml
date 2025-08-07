@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CobConsulta</title>
-    <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100 font-sans text-gray-900">
@@ -16,17 +16,27 @@
     <header class="sticky top-0 z-50 bg-white shadow-md">
         <div class="container mx-auto flex items-center justify-between px-4 py-3">
             <div class="flex items-center space-x-2">
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500">
-                    <i class="fas fa-file-invoice-dollar text-xl text-white"></i>
-                </div>
+                <img src="/img/cob-logo.png" alt="CobConsulta" />
                 <span class="text-xl font-bold text-gray-800">CobConsulta</span>
             </div>
             <nav class="hidden space-x-8 md:flex">
-                <a href="#" class="font-medium text-blue-600 transition hover:text-blue-800">Início</a>
-                <a href="#empresa" class="text-gray-600 transition hover:text-blue-600">Para Empresas</a>
-                <a href="#cliente" class="text-gray-600 transition hover:text-blue-600">Para Clientes</a>
-                <a href="#faq" class="text-gray-600 transition hover:text-blue-600">Dúvidas</a>
-                <a href="#contato" class="text-gray-600 transition hover:text-blue-600">Contato</a>
+                @if (Context.Session.GetString("Tipo") == "Empresa")
+                {
+                    <!-- Menu para empresa -->
+                    <a asp-controller="Empresa" asp-action="Dashboard" class="font-medium text-blue-600 transition hover:text-blue-800">Dashboard</a>
+                    <a asp-controller="Empresa" asp-action="Devedores" class="text-gray-600 transition hover:text-blue-600">Devedores</a>
+                    <a asp-controller="Empresa" asp-action="Cobrancas" class="text-gray-600 transition hover:text-blue-600">Cobranças</a>
+                    <a asp-controller="Empresa" asp-action="Funcionarios" class="text-gray-600 transition hover:text-blue-600">Funcionários</a>
+                }
+                else
+                {
+                    <!-- Menu para clientes e visitantes -->
+                    <a href="#" class="font-medium text-blue-600 transition hover:text-blue-800">Início</a>
+                    <a href="#empresa" class="text-gray-600 transition hover:text-blue-600">Para Empresas</a>
+                    <a href="#cliente" class="text-gray-600 transition hover:text-blue-600">Para Clientes</a>
+                    <a href="#faq" class="text-gray-600 transition hover:text-blue-600">Dúvidas</a>
+                    <a href="#contato" class="text-gray-600 transition hover:text-blue-600">Contato</a>
+                }
             </nav>
             <div class="flex items-center space-x-4">
                 @if (Context.Session.GetString("Tipo") != null)

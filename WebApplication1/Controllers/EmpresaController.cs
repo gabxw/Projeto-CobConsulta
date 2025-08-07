@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication1.Models;
+
 
 namespace WebApplication1.Controllers
 {
@@ -211,21 +213,42 @@ namespace WebApplication1.Controllers
                 TotalDevedores = totalDevedores,
                 ComPendencia = comPendencia,
                 SemPendencia = semPendencia,
+
                 Pendentes = pendentes,
                 Atrasadas = atrasadas,
                 Quitadas = quitadas,
+
                 Faturamento = faturamento,
                 ValorEmAberto = valorEmAberto,
+
+                FaturamentoMesAtual = faturamentoMesAtual,
+                FaturamentoMesAnterior = faturamentoMesAnterior,
+
+                TotalDividas = dividasDaEmpresa.Count,
+                ValorTotalDividas = dividasDaEmpresa.Sum(d => d.Valor),
+
+                ValorPendente = dividasDaEmpresa
+        .Where(d => d.Status == "Pendente")
+        .Sum(d => d.Valor),
+
+                ValorAtrasado = dividasDaEmpresa
+        .Where(d => d.Status == "Vencido")
+        .Sum(d => d.Valor),
+
+                ValorQuitado = dividasDaEmpresa
+        .Where(d => d.Status == "Quitado" || d.Status == "Finalizado")
+        .Sum(d => d.Valor),
+
                 TopDevedores = topDevedores,
                 Aging = agingBuckets,
                 Recentes = recentes,
+                Alertas = alertas,
+                NotificacoesRecentes = notificacoes,
+
                 TaxaRecuperacaoPercent = Math.Round(taxaRecuperacao, 1),
                 TempoMedioPagamentoDias = (decimal)Math.Max(0, Math.Round(mediaDias, 1)),
-                FaturamentoMesAtual = faturamentoMesAtual,
-                FaturamentoMesAnterior = faturamentoMesAnterior,
-                Alertas = alertas,
-                NomeEmpresa = empresa?.Nome ?? "Empresa",
-                NotificacoesRecentes = notificacoes
+
+                NomeEmpresa = empresa?.Nome ?? "Empresa"
             };
 
             return View(vm);
