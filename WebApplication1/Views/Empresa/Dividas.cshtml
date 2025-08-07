@@ -6,9 +6,14 @@
 
 <h1 class="text-2xl font-bold mb-4">Minhas Dívidas</h1>
 
-<a href="/Divida/Create" class="mb-4 inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+<a href="/Empresa/CreateDivida" class="mb-4 inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
     Adicionar Nova Dívida
 </a>
+
+<a href="/Empresa/ImportarDividas" class="mb-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+    Importar Excel
+</a>
+
 
 <table class="min-w-full bg-white rounded shadow">
     <thead>
@@ -21,7 +26,7 @@
             <th class="px-4 py-2 text-left">Pagamento</th>
             <th class="px-4 py-2 text-left">Criação</th>
             <th class="px-4 py-2 text-left">Status</th>
-            <th class="px-4 py-2 text-left">Ações</th> <!-- NOVA COLUNA -->
+            <th class="px-4 py-2 text-left">Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -36,12 +41,10 @@
                 <td class="px-4 py-2">@item.DataPagamento?.ToString("dd/MM/yyyy")</td>
                 <td class="px-4 py-2">@item.DataCriacao?.ToString("dd/MM/yyyy")</td>
                 <td class="px-4 py-2">@item.Status</td>
-                
-                <!-- COLUNA DE AÇÕES -->
                 <td class="px-4 py-2 flex gap-2">
-                    <a href="/Empresa/DetalhesDivida/@item.Id" class="text-blue-600 hover:underline">Detalhes</a>
-                    <a href="/Empresa/EditDivida/@item.Id" class="text-yellow-600 hover:underline">Editar</a>
-                    <a href="/Empresa/ExcluirDivida/@item.Id" class="text-red-600 hover:underline">Excluir</a>
+                    <a asp-controller="Empresa" asp-action="DetalhesDivida" asp-route-id="@item.Id" class="text-blue-600 hover:underline">Detalhes</a>
+                    <a asp-controller="Empresa" asp-action="EditDivida" asp-route-id="@item.Id" class="text-yellow-600 hover:underline">Editar</a>
+                    <a asp-controller="Empresa" asp-action="ExcluirDivida" asp-route-id="@item.Id" class="text-red-600 hover:underline">Excluir</a>
                 </td>
             </tr>
         }

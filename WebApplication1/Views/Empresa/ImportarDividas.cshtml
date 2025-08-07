@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Importar Dívidas por Excel";
+}
+
+<h2 class="text-2xl font-bold mb-4">Importar Dívidas via Excel</h2>
+
+<form asp-action="ImportarDividas" method="post" enctype="multipart/form-data">
+    <input type="file" name="arquivoExcel" accept=".xlsx" class="mb-4" />
+    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+        Importar
+    </button>
+</form>

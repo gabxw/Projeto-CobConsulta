@@ -1,0 +1,48 @@
+﻿@model WebApplication1.Models.Divida
+
+@{
+    ViewData["Title"] = "Detalhes da Dívida";
+}
+
+<h1 class="text-2xl font-bold mb-4">Detalhes da Dívida</h1>
+
+<div class="bg-white shadow-md rounded p-6">
+    <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <dt class="font-semibold">Devedor</dt>
+            <dd>@Model.Devedor?.Name</dd>
+        </div>
+        <div>
+            <dt class="font-semibold">Título</dt>
+            <dd>@Model.Titulo</dd>
+        </div>
+        <div>
+            <dt class="font-semibold">Descrição</dt>
+            <dd>@Model.Descricao</dd>
+        </div>
+        <div>
+            <dt class="font-semibold">Valor</dt>
+            <dd>R$ @Model.Valor.ToString("N2")</dd>
+        </div>
+        <div>
+            <dt class="font-semibold">Data de Vencimento</dt>
+            <dd>@Model.DataVencimento?.ToString("dd/MM/yyyy")</dd>
+        </div>
+        <div>
+            <dt class="font-semibold">Data de Pagamento</dt>
+            <dd>@Model.DataPagamento?.ToString("dd/MM/yyyy")</dd>
+        </div>
+        <div>
+            <dt class="font-semibold">Data de Criação</dt>
+            <dd>@Model.DataCriacao?.ToString("dd/MM/yyyy")</dd>
+        </div>
+        <div>
+            <dt class="font-semibold">Status</dt>
+            <dd>@Model.Status</dd>
+        </div>
+    </dl>
+
+    <div class="mt-6">
+        <a href="/Empresa/Dividas" class="text-blue-600 hover:underline">Voltar para lista</a>
+    </div>
+</div>

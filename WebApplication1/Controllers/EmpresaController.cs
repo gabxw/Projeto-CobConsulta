@@ -135,13 +135,23 @@ namespace WebApplication1.Controllers
                     .ToList();
 
                 ViewBag.Devedores = new SelectList(devedores, "Id", "Name", model.DevedorID);
-
                 return View(model);
             }
 
-            _context.Update(model);
-            await _context.SaveChangesAsync();
+            var dividaExistente = await _context.Dividas.FindAsync(model.Id);
+            if (dividaExistente == null)
+                return NotFound();
 
+            // Atualiza apenas os campos editáveis
+            dividaExistente.Titulo = model.Titulo;
+            dividaExistente.Descricao = model.Descricao;
+            dividaExistente.Valor = model.Valor;
+            dividaExistente.DataVencimento = model.DataVencimento;
+            dividaExistente.DataPagamento = model.DataPagamento;
+            dividaExistente.Status = model.Status;
+            dividaExistente.DevedorID = model.DevedorID;
+
+            await _context.SaveChangesAsync();
             return RedirectToAction("Dividas");
         }
 
@@ -188,6 +198,104 @@ namespace WebApplication1.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CreateDivida()
+        {
+            if (!EhEmpresaLogada())
+                return RedirectToAction("AcessoNegado", "Login");
+
+            int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
+
+            var devedores = await _context.Dividas
+                .Include(d => d.Devedor)
+                .Where(d => d.EmpresaID == empresaId && d.Devedor != null)
+                .Select(d => d.Devedor)
+                .Distinct()
+                .ToListAsync();
+
+            ViewBag.Devedores = new SelectList(devedores, "Id", "Name");
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ImportarDividas()
+        {
+            if (!EhEmpresaLogada())
+                return RedirectToAction("AcessoNegado", "Login");
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportarDividas(IFormFile arquivoExcel)
+        {
+            if (!EhEmpresaLogada())
+                return RedirectToAction("AcessoNegado", "Login");
+
+            if (arquivoExcel == null || arquivoExcel.Length == 0)
+            {
+                ModelState.AddModelError("", "Por favor, selecione um arquivo Excel válido.");
+                return View();
+            }
+
+            int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
+
+            using (var stream = new MemoryStream())
+            {
+                await arquivoExcel.CopyToAsync(stream);
+                using var package = new OfficeOpenXml.ExcelPackage(stream);
+                var worksheet = package.Workbook.Worksheets.First();
+                int rowCount = worksheet.Dimension.Rows;
+
+                for (int row = 2; row <= rowCount; row++)
+                {
+                    string nome = worksheet.Cells[row, 1].Text.Trim();
+                    string email = worksheet.Cells[row, 2].Text.Trim();
+                    string cpf = worksheet.Cells[row, 3].Text.Trim();
+
+                    var devedor = await _context.Devedores
+                        .FirstOrDefaultAsync(d => d.CPF == cpf && d.EmpresaID == empresaId);
+
+                    if (devedor == null)
+                    {
+                        devedor = new Devedor
+                        {
+                            Name = nome,
+                            Email = email,
+                            CPF = cpf,
+                            EmpresaID = empresaId
+                        };
+
+                        _context.Devedores.Add(devedor);
+                        await _context.SaveChangesAsync(); // salva para gerar o ID
+                    }
+
+                    string titulo = worksheet.Cells[row, 4].Text.Trim();
+                    string descricao = worksheet.Cells[row, 5].Text.Trim();
+                    decimal valor = decimal.TryParse(worksheet.Cells[row, 6].Text, out var v) ? v : 0;
+                    DateTime dataVencimento = DateTime.TryParse(worksheet.Cells[row, 7].Text, out var dt) ? dt : DateTime.Now.AddDays(30);
+
+                    var divida = new Divida
+                    {
+                        EmpresaID = empresaId,
+                        DevedorID = devedor.Id,
+                        Titulo = titulo,
+                        Descricao = descricao,
+                        Valor = valor,
+                        Status = "Pendente",
+                        DataCriacao = DateTime.Now,
+                        DataVencimento = dataVencimento
+                    };
+
+                    _context.Dividas.Add(divida);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Dividas");
+        }
 
         public async Task<IActionResult> Dashboard()
         {
