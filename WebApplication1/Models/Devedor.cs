@@ -19,6 +19,8 @@ namespace WebApplication1.Models
 
         [Required(ErrorMessage = "O CPF é obrigatório")]
         public string Cpf { get; set; }
+        [Required(ErrorMessage = "O telefone é obrigatório")]
+        public string Telefone { get; set; }
 
         [ValidateNever]
         public List<Divida> Dividas { get; set; }

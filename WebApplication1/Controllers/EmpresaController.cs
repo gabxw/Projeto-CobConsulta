@@ -7,6 +7,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using WebApplication1.ViewModels;
+using WebApplication1.Helpers;
+using System.IO;
 
 
 namespace WebApplication1.Controllers
@@ -228,74 +231,100 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ImportarDividas(IFormFile arquivoExcel)
+        public async Task<IActionResult> ImportarDividas(IFormFile excelFile)
         {
             if (!EhEmpresaLogada())
                 return RedirectToAction("AcessoNegado", "Login");
 
-            if (arquivoExcel == null || arquivoExcel.Length == 0)
+            if (excelFile == null || excelFile.Length == 0)
             {
-                ModelState.AddModelError("", "Por favor, selecione um arquivo Excel válido.");
+                ModelState.AddModelError("", "Selecione um arquivo Excel.");
                 return View();
             }
 
             int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
 
-            using (var stream = new MemoryStream())
+            using var stream = new MemoryStream();
+            await excelFile.CopyToAsync(stream);
+            stream.Position = 0; // resetar a posição antes de ler
+
+            var resultado = ExcelImportHelper.ProcessarExcel(stream, empresaId);
+
+            if (resultado.Erros.Any())
             {
-                await arquivoExcel.CopyToAsync(stream);
-                using var package = new OfficeOpenXml.ExcelPackage(stream);
-                var worksheet = package.Workbook.Worksheets.First();
-                int rowCount = worksheet.Dimension.Rows;
-
-                for (int row = 2; row <= rowCount; row++)
+                var vmErro = new ImportacaoDividaViewModel
                 {
-                    string nome = worksheet.Cells[row, 1].Text.Trim();
-                    string email = worksheet.Cells[row, 2].Text.Trim();
-                    string cpf = worksheet.Cells[row, 3].Text.Trim();
-
-                    var devedor = await _context.Devedores
-                        .FirstOrDefaultAsync(d => d.CPF == cpf && d.EmpresaID == empresaId);
-
-                    if (devedor == null)
-                    {
-                        devedor = new Devedor
-                        {
-                            Name = nome,
-                            Email = email,
-                            CPF = cpf,
-                            EmpresaID = empresaId
-                        };
-
-                        _context.Devedores.Add(devedor);
-                        await _context.SaveChangesAsync(); // salva para gerar o ID
-                    }
-
-                    string titulo = worksheet.Cells[row, 4].Text.Trim();
-                    string descricao = worksheet.Cells[row, 5].Text.Trim();
-                    decimal valor = decimal.TryParse(worksheet.Cells[row, 6].Text, out var v) ? v : 0;
-                    DateTime dataVencimento = DateTime.TryParse(worksheet.Cells[row, 7].Text, out var dt) ? dt : DateTime.Now.AddDays(30);
-
-                    var divida = new Divida
-                    {
-                        EmpresaID = empresaId,
-                        DevedorID = devedor.Id,
-                        Titulo = titulo,
-                        Descricao = descricao,
-                        Valor = valor,
-                        Status = "Pendente",
-                        DataCriacao = DateTime.Now,
-                        DataVencimento = dataVencimento
-                    };
-
-                    _context.Dividas.Add(divida);
-                }
-
-                await _context.SaveChangesAsync();
+                    Erros = resultado.Erros
+                };
+                return View("ImportarDividas", vmErro);
             }
 
+            var dividasImportadas = resultado.Dividas.Select(d => new DividaImportada
+            {
+                Nome = d.Devedor.Name,
+                Email = d.Devedor.Email,
+                Telefone = d.Devedor.Telefone,
+                CPF = d.Devedor.Cpf,
+                Titulo = d.Titulo,
+                Descricao = d.Descricao,
+                Valor = d.Valor,
+                Status = d.Status,
+                DataVencimento = d.DataVencimento ?? DateTime.Now
+            }).ToList();
+
+            var vm = new ImportacaoDividaViewModel
+            {
+                Dividas = dividasImportadas
+            };
+
+            return View("ConfirmarImportacao", vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmarImportacao(List<DividaImportada> dividasConfirmadas)
+        {
+            int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
+
+            foreach (var item in dividasConfirmadas)
+            {
+                var devedorExistente = await _context.Devedores.FirstOrDefaultAsync(d => d.Cpf == item.CPF);
+
+                if (devedorExistente == null)
+                {
+                    devedorExistente = new Devedor
+                    {
+                        Name = item.Nome,
+                        Email = item.Email,
+                        Cpf = item.CPF,
+                        Senha = "importado", // ou gere aleatória
+                        Telefone = item.Telefone
+                    };
+
+                    _context.Devedores.Add(devedorExistente);
+                    await _context.SaveChangesAsync();
+                }
+
+                var novaDivida = new Divida
+                {
+                    EmpresaID = empresaId,
+                    DevedorID = devedorExistente.Id,
+                    Titulo = item.Titulo,
+                    Descricao = item.Descricao,
+                    Valor = (int)item.Valor,
+                    DataVencimento = item.DataVencimento,
+                    DataCriacao = DateTime.Now,
+                    Status = item.Status
+                };
+
+                _context.Dividas.Add(novaDivida);
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["MensagemSucesso"] = "Importação concluída com sucesso.";
             return RedirectToAction("Dividas");
         }
+
 
         public async Task<IActionResult> Dashboard()
         {

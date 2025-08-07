@@ -1,12 +1,31 @@
-﻿@{
-    ViewData["Title"] = "Importar Dívidas por Excel";
+﻿@model WebApplication1.ViewModels.ImportacaoDividaViewModel
+
+@{
+    ViewData["Title"] = "Importar Dívidas";
 }
 
 <h2 class="text-2xl font-bold mb-4">Importar Dívidas via Excel</h2>
 
-<form asp-action="ImportarDividas" method="post" enctype="multipart/form-data">
-    <input type="file" name="arquivoExcel" accept=".xlsx" class="mb-4" />
-    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-        Importar
+<form asp-action="ImportarDividas" method="post" enctype="multipart/form-data" class="space-y-4">
+    <div>
+        <label for="excelFile" class="block font-semibold">Selecione o arquivo:</label>
+        <input type="file" name="excelFile" class="border border-gray-300 p-2 rounded w-full" />
+    </div>
+
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Enviar
     </button>
 </form>
+
+@if (Model?.Erros?.Any() == true)
+{
+        <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <strong>Erros encontrados:</strong>
+            <ul class="list-disc pl-5">
+            @foreach (var erro in Model.Erros)
+            {
+                        <li>@erro</li>
+            }
+            </ul>
+        </div>
+}

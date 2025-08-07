@@ -1,0 +1,49 @@
+﻿@using WebApplication1.ViewModels
+@model ImportacaoDividaViewModel
+
+<h2 class="text-2xl font-bold mb-4">Pré-visualização das Dívidas</h2>
+
+@if (Model.Erros.Any())
+{
+        <div class="bg-red-100 text-red-800 p-4 rounded mb-4">
+            <strong>Erros encontrados:</strong>
+            <ul>
+            @foreach (var erro in Model.Erros)
+            {
+                        <li>@erro</li>
+            }
+            </ul>
+            <a href="@Url.Action("ImportarDividas")" class="text-blue-600 underline">Corrigir e reenviar</a>
+        </div>
+}
+else
+{
+        <form asp-action="ConfirmarImportacao" method="post">
+            <table class="min-w-full bg-white rounded shadow mb-4">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th>Nome</th><th>Telefone</th><th>Email</th><th>CPF</th>
+                        <th>Título</th><th>Descrição</th><th>Valor</th><th>Status</th><th>Vencimento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for (int i = 0; i < Model.Dividas.Count; i++)
+                {
+                            <tr>
+                                <td><input type="hidden" name="dividasConfirmadas[@i].Nome" value="@Model.Dividas[i].Nome" />@Model.Dividas[i].Nome</td>
+                                <td><input type="hidden" name="dividasConfirmadas[@i].Telefone" value="@Model.Dividas[i].Telefone" />@Model.Dividas[i].Telefone</td>
+                                <td><input type="hidden" name="dividasConfirmadas[@i].Email" value="@Model.Dividas[i].Email" />@Model.Dividas[i].Email</td>
+                                <td><input type="hidden" name="dividasConfirmadas[@i].CPF" value="@Model.Dividas[i].CPF" />@Model.Dividas[i].CPF</td>
+                                <td><input type="hidden" name="dividasConfirmadas[@i].Titulo" value="@Model.Dividas[i].Titulo" />@Model.Dividas[i].Titulo</td>
+                                <td><input type="hidden" name="dividasConfirmadas[@i].Descricao" value="@Model.Dividas[i].Descricao" />@Model.Dividas[i].Descricao</td>
+                                <td><input type="hidden" name="dividasConfirmadas[@i].Valor" value="@Model.Dividas[i].Valor" />@Model.Dividas[i].Valor</td>
+                                <td><input type="hidden" name="dividasConfirmadas[@i].Status" value="@Model.Dividas[i].Status" />@Model.Dividas[i].Status</td>
+                                <td><input type="hidden" name="dividasConfirmadas[@i].DataVencimento" value="@Model.Dividas[i].DataVencimento?.ToString("yyyy-MM-dd")" />@Model.Dividas[i].DataVencimento?.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                }
+                </tbody>
+            </table>
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Confirmar Importação</button>
+            <a href="@Url.Action("ImportarDividas")" class="ml-4 text-gray-600 hover:underline">Cancelar</a>
+        </form>
+}
