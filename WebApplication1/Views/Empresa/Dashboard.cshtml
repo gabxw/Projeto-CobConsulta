@@ -32,38 +32,36 @@
     }
 
     <!-- KPIs principais -->
-
-
-    <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="mb-8 grid grid-cols-1 gap-y-8 gap-x-6 md:grid-cols-2 lg:grid-cols-3">
         <!-- Coluna 1: Situação dos Devedores -->
         <div class="space-y-4">
-            <div class="rounded-lg bg-yellow-100 p-5 shadow">
-                <div class="text-xs font-semibold text-gray-700 uppercase">Pendentes</div>
-                <div class="mt-1 text-2xl font-bold text-yellow-800">@Model.Pendentes</div>
+            <div class="rounded-xl border border-yellow-300 bg-yellow-100 p-6 shadow-sm hover:shadow-lg transition">
+                <div class="text-xs font-semibold text-gray-700 uppercase mb-2">Pendentes</div>
+                <div class="text-3xl font-extrabold text-yellow-800 text-center">@Model.Pendentes</div>
             </div>
-            <div class="rounded-lg bg-red-100 p-5 shadow">
-                <div class="text-xs font-semibold text-gray-700 uppercase">Atrasadas</div>
-                <div class="mt-1 text-2xl font-bold text-red-800">@Model.Atrasadas</div>
+            <div class="rounded-xl border border-red-300 bg-red-100 p-6 shadow-sm hover:shadow-lg transition">
+                <div class="text-xs font-semibold text-gray-700 uppercase mb-2">Atrasadas</div>
+                <div class="text-3xl font-extrabold text-red-800 text-center">@Model.Atrasadas</div>
             </div>
-            <div class="rounded-lg bg-green-100 p-5 shadow">
-                <div class="text-xs font-semibold text-gray-700 uppercase">Quitadas</div>
-                <div class="mt-1 text-2xl font-bold text-green-800">@Model.Quitadas</div>
+            <div class="rounded-xl border border-green-300 bg-green-100 p-6 shadow-sm hover:shadow-lg transition">
+                <div class="text-xs font-semibold text-gray-700 uppercase mb-2">Quitadas</div>
+                <div class="text-3xl font-extrabold text-green-800 text-center">@Model.Quitadas</div>
             </div>
         </div>
 
         <!-- Coluna 2: Totais -->
         <div class="space-y-4">
-            <div class="rounded-lg bg-yellow-200 p-5 shadow">
-                <div class="text-xs font-semibold text-gray-700 uppercase">Devedores Totais</div>
-                <div class="mt-1 text-2xl font-bold">@Model.TotalDevedores</div>
+            <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-6 shadow-sm hover:shadow-lg transition">
+                <div class="text-xs font-semibold text-gray-700 uppercase mb-2">Devedores Totais</div>
+                <div class="text-3xl font-extrabold text-yellow-800 text-center">@Model.TotalDevedores</div>
             </div>
-            <div class="rounded-lg bg-white p-5 shadow">
-                <div class="text-xs font-semibold text-gray-700 uppercase">Dívidas Totais</div>
-                <div class="mt-1 text-2xl font-bold">@Model.TotalDividas</div>
+            <div class="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm hover:shadow-lg transition">
+                <div class="text-xs font-semibold text-gray-700 uppercase mb-2">Dívidas Totais</div>
+                <div class="text-3xl font-extrabold text-red-800 text-center">@Model.TotalDividas</div>
             </div>
-            <div class="rounded-lg bg-white p-5 shadow">
-                <div class="text-xs font-semibold text-gray-700 uppercase">Valor Total Devido</div>
-                <div class="mt-1 text-2xl font-bold text-indigo-600">
+            <div class="rounded-xl border border-green-200 bg-green-50 p-6 shadow-sm hover:shadow-lg transition">
+                <div class="text-xs font-semibold text-gray-700 uppercase mb-2">Valor Total Devido</div>
+                <div class="text-3xl font-extrabold text-indigo-600 text-center">
                     R$ @((Model.Faturamento + Model.ValorEmAberto).ToString("N2"))
                 </div>
             </div>
@@ -72,17 +70,17 @@
         <!-- Coluna 3: Valores com toggle -->
         <div class="space-y-4">
             
-            <div class="rounded-lg bg-yellow-50 p-5 shadow">
-                <div class="text-xs font-semibold text-gray-700 uppercase">Valor em Pendência</div>
-                <div class="mt-1 text-2xl font-bold text-yellow-800">R$ @Model.ValorPendente.ToString("N2")</div>
+            <div class="rounded-xl border border-yellow-100 bg-yellow-50 p-6 shadow-sm hover:shadow-lg transition">
+                <div class="text-xs font-semibold text-gray-700 uppercase mb-2">Valor em Pendência</div>
+                <div class="text-3xl font-extrabold text-yellow-800 text-center">R$ @Model.ValorPendente.ToString("N2")</div>
             </div>
-            <div class="rounded-lg bg-red-50 p-5 shadow">
-                <div class="text-xs font-semibold text-gray-700 uppercase">Valor em Atraso</div>
-                <div class="mt-1 text-2xl font-bold text-red-800">R$ @Model.ValorAtrasado.ToString("N2")</div>
+            <div class="rounded-xl border border-red-100 bg-red-50 p-6 shadow-sm hover:shadow-lg transition">
+                <div class="text-xs font-semibold text-gray-700 uppercase mb-2">Valor em Atraso</div>
+                <div class="text-3xl font-extrabold text-red-800 text-center">R$ @Model.ValorAtrasado.ToString("N2")</div>
             </div>
-            <div class="rounded-lg bg-green-50 p-5 shadow">
-                <div class="text-xs font-semibold text-gray-700 uppercase">Valor Quitado</div>
-                <div class="mt-1 text-2xl font-bold text-green-800">R$ @Model.ValorQuitado.ToString("N2")</div>
+            <div class="rounded-xl border border-green-100 bg-green-50 p-6 shadow-sm hover:shadow-lg transition">
+                <div class="text-xs font-semibold text-gray-700 uppercase mb-2">Valor Quitado</div>
+                <div class="text-3xl font-extrabold text-green-800 text-center">R$ @Model.ValorQuitado.ToString("N2")</div>
             </div>
         </div>
     </div>
