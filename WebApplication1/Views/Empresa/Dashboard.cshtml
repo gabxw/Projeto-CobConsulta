@@ -33,14 +33,6 @@
 
     <!-- KPIs principais -->
 
-    <!-- Botões de Alternância (Total / Ano / Mês) -->
-    <div class="mb-4 flex justify-end">
-        <div class="flex space-x-2">
-            <button class="px-4 py-1 text-xs font-bold text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Total</button>
-            <button class="px-4 py-1 text-xs font-bold text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Ano</button>
-            <button class="px-4 py-1 text-xs font-bold text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Mês</button>
-        </div>
-    </div>
 
     <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
         <!-- Coluna 1: Situação dos Devedores -->
@@ -61,7 +53,7 @@
 
         <!-- Coluna 2: Totais -->
         <div class="space-y-4">
-            <div class="rounded-lg bg-white p-5 shadow">
+            <div class="rounded-lg bg-yellow-200 p-5 shadow">
                 <div class="text-xs font-semibold text-gray-700 uppercase">Devedores Totais</div>
                 <div class="mt-1 text-2xl font-bold">@Model.TotalDevedores</div>
             </div>
@@ -79,14 +71,7 @@
 
         <!-- Coluna 3: Valores com toggle -->
         <div class="space-y-4">
-            <div class="flex flex-col justify-between space-y-1">
-                <span class="text-sm font-semibold text-gray-700 uppercase">Valores</span>
-                <div class="flex space-x-2">
-                    <button class="px-4 py-1 text-xs font-bold text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Total</button>
-                    <button class="px-4 py-1 text-xs font-bold text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Ano</button>
-                    <button class="px-4 py-1 text-xs font-bold text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Mês</button>
-                </div>
-            </div>
+            
             <div class="rounded-lg bg-yellow-50 p-5 shadow">
                 <div class="text-xs font-semibold text-gray-700 uppercase">Valor em Pendência</div>
                 <div class="mt-1 text-2xl font-bold text-yellow-800">R$ @Model.ValorPendente.ToString("N2")</div>

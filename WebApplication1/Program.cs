@@ -43,4 +43,18 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+
+    // Debug: Listar rotas
+    Console.WriteLine("Rotas registradas:");
+    foreach (var route in endpoints.DataSources.First().Endpoints.OfType<RouteEndpoint>())
+    {
+        Console.WriteLine(route.RoutePattern.RawText);
+    }
+});
+
 app.Run();
