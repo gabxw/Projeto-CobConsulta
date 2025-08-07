@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -19,29 +20,43 @@
                 </div>
                 <span class="text-xl font-bold text-gray-800">CobConsulta</span>
             </div>
-            <nav class="hidden space-x-8 md:flex">
-                <a href="#" class="font-medium text-blue-600 transition hover:text-blue-800">Início</a>
+
+            <nav class="hidden space-x-4 md:flex items-center">
+                <a href="/Empresa/Dashboard" class="font-medium text-blue-600 transition hover:text-blue-800">Início</a>
                 <a href="#empresa" class="text-gray-600 transition hover:text-blue-600">Para Empresas</a>
                 <a href="#cliente" class="text-gray-600 transition hover:text-blue-600">Para Clientes</a>
                 <a href="#faq" class="text-gray-600 transition hover:text-blue-600">Dúvidas</a>
                 <a href="#contato" class="text-gray-600 transition hover:text-blue-600">Contato</a>
-            </nav>
-            <div class="flex items-center space-x-4">
-                @if (Context.Session.GetString("Tipo") != null)
+
+                @if (HttpContextAccessor.HttpContext.Session.GetString("Tipo") == "Empresa")
                 {
-                    <form asp-controller="Login" asp-action="Sair" method="post">
-                        <button type="submit"
-                                class="rounded bg-red-500 px-4 py-2 font-bold text-white transition duration-200 hover:bg-red-700">
-                            Sair 
-                        </button>
-                    </form>
+                           <a href="/Empresa/Dividas"
+                           class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-2 rounded transition">
+                            Ver Dívidas
+                        </a>
+                           <a href="/Empresa/CreateDivida"
+                           class="bg-green-600 hover:bg-green-700 text-white font-semibold px-3 py-2 rounded transition">
+                            Nova Dívida
+                        </a>
+                }
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                @if (HttpContextAccessor.HttpContext.Session.GetString("Tipo") != null)
+                {
+                        <form asp-controller="Login" asp-action="Sair" method="post">
+                            <button type="submit"
+                                    class="rounded bg-red-500 px-4 py-2 font-bold text-white transition duration-200 hover:bg-red-700">
+                                Sair
+                            </button>
+                        </form>
                 }
                 else
                 {
-                    <a asp-controller="Login" asp-action="Index"
-                       class="rounded bg-blue-600 px-4 py-2 font-bold text-white transition duration-200 hover:bg-blue-700">
-                        Acessar
-                    </a>
+                        <a asp-controller="Login" asp-action="Index"
+                           class="rounded bg-blue-600 px-4 py-2 font-bold text-white transition duration-200 hover:bg-blue-700">
+                            Acessar
+                        </a>
                 }
                 <button class="text-gray-600 md:hidden">
                     <i class="fas fa-bars text-xl"></i>
@@ -50,7 +65,7 @@
         </div>
     </header>
 
- 
+    <main class="container mx-auto px-4 py-6">
         @RenderBody()
     </main>
 

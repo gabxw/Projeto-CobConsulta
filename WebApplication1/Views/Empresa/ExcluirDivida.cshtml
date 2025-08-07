@@ -1,0 +1,19 @@
+﻿@model WebApplication1.Models.Divida
+
+@{
+    ViewData["Title"] = "Excluir Dívida";
+}
+
+<h1 class="text-2xl font-bold mb-6">Confirmar Exclusão</h1>
+
+<div class="bg-white p-6 rounded shadow">
+    <p class="mb-4 text-lg">
+        Tem certeza que deseja excluir a dívida <strong>@Model.Titulo</strong> do devedor <strong>@Model.Devedor?.Name</strong>?
+    </p>
+
+    <form asp-action="ExcluirDivida" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Excluir</button>
+        <a href="/Empresa/Dividas" class="ml-4 text-gray-600 hover:underline">Cancelar</a>
+    </form>
+</div>

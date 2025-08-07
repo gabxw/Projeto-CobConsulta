@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 
 namespace WebApplication1.Controllers
@@ -28,6 +29,165 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
+
+        public async Task<IActionResult> Dividas()
+        {
+            if (!EhEmpresaLogada())
+                return RedirectToAction("AcessoNegado", "Login");
+
+            int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
+
+            var dividas = await _context.Dividas
+                .Include(d => d.Devedor)
+                .Where(d => d.EmpresaID == empresaId)
+                .OrderByDescending(d => d.DataCriacao)
+                .ToListAsync();
+
+            return View(dividas);
+        }
+
+        public async Task<IActionResult> DetalhesDivida(int id)
+        {
+            if (!EhEmpresaLogada())
+                return RedirectToAction("AcessoNegado", "Login");
+
+            var divida = await _context.Dividas
+                .Include(d => d.Devedor)
+                .Include(d => d.Empresa)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (divida == null)
+                return NotFound();
+
+            return View(divida);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExcluirDivida(int id)
+        {
+            if (!EhEmpresaLogada())
+                return RedirectToAction("AcessoNegado", "Login");
+
+            var divida = await _context.Dividas
+                .Include(d => d.Devedor)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (divida == null)
+                return NotFound();
+
+            return View(divida);
+        }
+
+        [HttpPost, ActionName("ExcluirDivida")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExcluirConfirmado(int id)
+        {
+            var divida = await _context.Dividas.FindAsync(id);
+
+            if (divida != null)
+            {
+                _context.Dividas.Remove(divida);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Dividas");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> EditDivida(int id)
+        {
+            if (!EhEmpresaLogada())
+                return RedirectToAction("AcessoNegado", "Login");
+
+            var divida = await _context.Dividas.FindAsync(id);
+
+            if (divida == null)
+                return NotFound();
+
+            var devedores = _context.Dividas
+                .Include(d => d.Devedor)
+                .Where(d => d.EmpresaID == divida.EmpresaID && d.Devedor != null)
+                .Select(d => d.Devedor)
+                .Distinct()
+                .ToList();
+
+            ViewBag.Devedores = new SelectList(devedores, "Id", "Name", divida.DevedorID);
+
+            return View(divida);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditDivida(Divida model)
+        {
+            if (!EhEmpresaLogada())
+                return RedirectToAction("AcessoNegado", "Login");
+
+            if (!ModelState.IsValid)
+            {
+                int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
+                var devedores = _context.Dividas
+                    .Include(d => d.Devedor)
+                    .Where(d => d.EmpresaID == empresaId && d.Devedor != null)
+                    .Select(d => d.Devedor)
+                    .Distinct()
+                    .ToList();
+
+                ViewBag.Devedores = new SelectList(devedores, "Id", "Name", model.DevedorID);
+
+                return View(model);
+            }
+
+            _context.Update(model);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Dividas");
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateDivida(Divida model)
+        {
+            if (!EhEmpresaLogada())
+                return RedirectToAction("AcessoNegado", "Login");
+
+            int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
+
+            var devedorEhValido = await _context.Dividas
+                .AnyAsync(d => d.DevedorID == model.DevedorID && d.EmpresaID == empresaId);
+
+            if (!devedorEhValido)
+            {
+                ModelState.AddModelError("DevedorID", "Esse devedor não está associado à sua empresa.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                model.EmpresaID = empresaId;
+                model.Status = "Pendente";
+                model.DataCriacao = DateTime.Now;
+
+                _context.Dividas.Add(model);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Dividas");
+            }
+
+            // Recarrega dropdown para repintar a view com erro
+            var devedores = _context.Dividas
+                .Include(d => d.Devedor)
+                .Where(d => d.EmpresaID == empresaId && d.Devedor != null)
+                .Select(d => d.Devedor)
+                .Distinct()
+                .ToList();
+
+            ViewBag.Devedores = new SelectList(devedores, "Id", "Name", model.DevedorID);
+
+            return View(model);
+        }
+
 
         public async Task<IActionResult> Dashboard()
         {
