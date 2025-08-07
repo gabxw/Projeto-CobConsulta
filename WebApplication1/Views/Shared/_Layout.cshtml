@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -35,22 +36,23 @@
                     <a href="#contato" class="text-gray-600 transition hover:text-blue-600">Contato</a>
                 }
             </nav>
+
             <div class="flex items-center space-x-4">
-                @if (Context.Session.GetString("Tipo") != null)
+                @if (HttpContextAccessor.HttpContext.Session.GetString("Tipo") != null)
                 {
-                    <form asp-controller="Login" asp-action="Sair" method="post">
-                        <button type="submit"
-                                class="rounded bg-red-500 px-4 py-2 font-bold text-white transition duration-200 hover:bg-red-700">
-                            Sair 
-                        </button>
-                    </form>
+                        <form asp-controller="Login" asp-action="Sair" method="post">
+                            <button type="submit"
+                                    class="rounded bg-red-500 px-4 py-2 font-bold text-white transition duration-200 hover:bg-red-700">
+                                Sair
+                            </button>
+                        </form>
                 }
                 else
                 {
-                    <a asp-controller="Login" asp-action="Index"
-                       class="rounded bg-blue-600 px-4 py-2 font-bold text-white transition duration-200 hover:bg-blue-700">
-                        Acessar
-                    </a>
+                        <a asp-controller="Login" asp-action="Index"
+                           class="rounded bg-blue-600 px-4 py-2 font-bold text-white transition duration-200 hover:bg-blue-700">
+                            Acessar
+                        </a>
                 }
                 <button class="text-gray-600 md:hidden">
                     <i class="fas fa-bars text-xl"></i>
@@ -59,7 +61,7 @@
         </div>
     </header>
 
- 
+    <main class="container mx-auto px-4 py-6">
         @RenderBody()
     </main>
 

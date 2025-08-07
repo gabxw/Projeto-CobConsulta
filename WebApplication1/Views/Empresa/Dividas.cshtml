@@ -1,0 +1,49 @@
+﻿@model List<WebApplication1.Models.Divida>
+
+@{
+    ViewData["Title"] = "Minhas Dívidas";
+}
+
+<h1 class="text-2xl font-bold mb-4">Minhas Dívidas</h1>
+
+<a href="/Divida/Create" class="mb-4 inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+    Adicionar Nova Dívida
+</a>
+
+<table class="min-w-full bg-white rounded shadow">
+    <thead>
+        <tr class="bg-gray-100">
+            <th class="px-4 py-2 text-left">Devedor</th>
+            <th class="px-4 py-2 text-left">Título</th>
+            <th class="px-4 py-2 text-left">Descrição</th>
+            <th class="px-4 py-2 text-left">Valor</th>
+            <th class="px-4 py-2 text-left">Vencimento</th>
+            <th class="px-4 py-2 text-left">Pagamento</th>
+            <th class="px-4 py-2 text-left">Criação</th>
+            <th class="px-4 py-2 text-left">Status</th>
+            <th class="px-4 py-2 text-left">Ações</th> <!-- NOVA COLUNA -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-2">@item.Devedor?.Name</td>
+                <td class="px-4 py-2">@item.Titulo</td>
+                <td class="px-4 py-2">@item.Descricao</td>
+                <td class="px-4 py-2">R$ @item.Valor.ToString("N2")</td>
+                <td class="px-4 py-2">@item.DataVencimento?.ToString("dd/MM/yyyy")</td>
+                <td class="px-4 py-2">@item.DataPagamento?.ToString("dd/MM/yyyy")</td>
+                <td class="px-4 py-2">@item.DataCriacao?.ToString("dd/MM/yyyy")</td>
+                <td class="px-4 py-2">@item.Status</td>
+                
+                <!-- COLUNA DE AÇÕES -->
+                <td class="px-4 py-2 flex gap-2">
+                    <a href="/Empresa/DetalhesDivida/@item.Id" class="text-blue-600 hover:underline">Detalhes</a>
+                    <a href="/Empresa/EditDivida/@item.Id" class="text-yellow-600 hover:underline">Editar</a>
+                    <a href="/Empresa/ExcluirDivida/@item.Id" class="text-red-600 hover:underline">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
