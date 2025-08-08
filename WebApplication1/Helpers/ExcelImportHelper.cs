@@ -19,14 +19,16 @@ namespace WebApplication1.Helpers
     {
         public static ImportResult ProcessarExcel(Stream excelStream, int empresaId)
         {
+            // EPPlus 8+ exige definir o contexto de licença ANTES de qualquer uso
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
             var resultado = new ImportResult();
 
             try
             {
-                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-
                 using var package = new ExcelPackage(excelStream);
                 var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+
                 if (worksheet == null)
                 {
                     resultado.Erros.Add("A planilha está vazia ou não foi encontrada.");
@@ -46,13 +48,13 @@ namespace WebApplication1.Helpers
                     var status = worksheet.Cells[linha, 8].Text?.Trim();
                     var vencimentoTexto = worksheet.Cells[linha, 9].Text?.Trim();
 
-                    // Detectar fim dos dados
+                    // Se linha estiver completamente vazia → fim dos dados
                     if (string.IsNullOrWhiteSpace(nome) &&
                         string.IsNullOrWhiteSpace(cpf) &&
                         string.IsNullOrWhiteSpace(titulo))
                         break;
 
-                    // Lista de erros dessa linha
+                    // Validação dos campos
                     List<string> errosLinha = new();
 
                     if (string.IsNullOrWhiteSpace(nome)) errosLinha.Add("Nome é obrigatório.");
@@ -74,13 +76,14 @@ namespace WebApplication1.Helpers
                         continue;
                     }
 
+                    // Criar objeto devedor e dívida
                     var devedor = new Devedor
                     {
                         Name = nome,
                         Email = email,
                         Cpf = cpf,
                         Telefone = telefone,
-                        Senha = "importado" // placeholder
+                        Senha = "importado"
                     };
 
                     var divida = new Divida
@@ -101,7 +104,6 @@ namespace WebApplication1.Helpers
             }
             catch (Exception ex)
             {
-                // Captura qualquer erro inesperado no processamento do Excel
                 resultado.Erros.Add($"Erro inesperado ao ler o Excel: {ex.Message}");
             }
 
@@ -110,7 +112,7 @@ namespace WebApplication1.Helpers
 
         private static bool IsValidEmail(string email)
         {
-            return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+            return Regex.IsMatch(email ?? "", @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
         }
 
         private static bool IsValidCpf(string cpf)

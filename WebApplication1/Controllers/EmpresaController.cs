@@ -227,7 +227,8 @@ namespace WebApplication1.Controllers
             if (!EhEmpresaLogada())
                 return RedirectToAction("AcessoNegado", "Login");
 
-            return View();
+            // Garante que a View receba um modelo vazio para não dar erro no Razor
+            return View(new ImportacaoDividaViewModel());
         }
 
         [HttpPost]
@@ -239,7 +240,15 @@ namespace WebApplication1.Controllers
             if (excelFile == null || excelFile.Length == 0)
             {
                 ModelState.AddModelError("", "Selecione um arquivo Excel.");
-                return View();
+                return View(new ImportacaoDividaViewModel());
+            }
+
+            // Valida extensão
+            var extensao = Path.GetExtension(excelFile.FileName).ToLower();
+            if (extensao != ".xlsx")
+            {
+                ModelState.AddModelError("", "O arquivo deve estar no formato .xlsx (Excel).");
+                return View(new ImportacaoDividaViewModel());
             }
 
             int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
@@ -248,19 +257,19 @@ namespace WebApplication1.Controllers
             {
                 using var stream = new MemoryStream();
                 await excelFile.CopyToAsync(stream);
-                stream.Position = 0; // resetar a posição antes de ler
+                stream.Position = 0;
 
                 var resultado = ExcelImportHelper.ProcessarExcel(stream, empresaId);
 
                 if (resultado.Erros.Any())
                 {
-                    var vmErro = new ImportacaoDividaViewModel
+                    return View("ImportarDividas", new ImportacaoDividaViewModel
                     {
                         Erros = resultado.Erros
-                    };
-                    return View("ImportarDividas", vmErro);
+                    });
                 }
 
+                // Converte para ViewModel de pré-visualização
                 var dividasImportadas = resultado.Dividas.Select(d => new DividaImportada
                 {
                     Nome = d.Devedor.Name,
@@ -274,29 +283,30 @@ namespace WebApplication1.Controllers
                     DataVencimento = d.DataVencimento ?? DateTime.Now
                 }).ToList();
 
-                var vm = new ImportacaoDividaViewModel
+                return View("ConfirmarImportacao", new ImportacaoDividaViewModel
                 {
                     Dividas = dividasImportadas
-                };
-
-                return View("ConfirmarImportacao", vm);
+                });
             }
             catch (Exception ex)
             {
-                // Aqui registraria no log, se quiser
                 ModelState.AddModelError("", $"Erro ao processar o arquivo: {ex.Message}");
-                return View();
+                return View(new ImportacaoDividaViewModel());
             }
         }
 
         [HttpPost]
         public async Task<IActionResult> ConfirmarImportacao(List<DividaImportada> dividasConfirmadas)
         {
+            if (!EhEmpresaLogada())
+                return RedirectToAction("AcessoNegado", "Login");
+
             int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
 
             foreach (var item in dividasConfirmadas)
             {
-                var devedorExistente = await _context.Devedores.FirstOrDefaultAsync(d => d.Cpf == item.CPF);
+                var devedorExistente = await _context.Devedores
+                    .FirstOrDefaultAsync(d => d.Cpf == item.CPF);
 
                 if (devedorExistente == null)
                 {
@@ -305,7 +315,7 @@ namespace WebApplication1.Controllers
                         Name = item.Nome,
                         Email = item.Email,
                         Cpf = item.CPF,
-                        Senha = "importado", // ou gere aleatória
+                        Senha = "importado",
                         Telefone = item.Telefone
                     };
 
