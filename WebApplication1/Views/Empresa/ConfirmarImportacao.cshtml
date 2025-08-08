@@ -26,10 +26,10 @@
             {
                 <tr>
                     <td>@Model.Dividas[i].Titulo</td>
-                    <td>@Model.Dividas[i].NomeDevedor</td>
-                    <td>@Model.Dividas[i].EmailDevedor</td>
-                    <td>@Model.Dividas[i].CpfDevedor</td>
-                    <td>@Model.Dividas[i].TelefoneDevedor</td>
+                    <td>@Model.Dividas[i].Nome</td>
+                    <td>@Model.Dividas[i].Email</td>
+                    <td>@Model.Dividas[i].Cpf</td>
+                    <td>@Model.Dividas[i].Telefone</td>
                     <td>@Model.Dividas[i].Descricao</td>
                     <td>@Model.Dividas[i].Valor</td>
                     <td>@Model.Dividas[i].Status</td>
@@ -42,11 +42,11 @@
                     <input type="hidden" name="dividasConfirmadas[@i].Status" value="@Model.Dividas[i].Status" />
                     <input type="hidden" name="dividasConfirmadas[@i].DataVencimento" value="@Model.Dividas[i].DataVencimento?.ToString("yyyy-MM-dd")" />
 
-                    <input type="hidden" name="dividasConfirmadas[@i].NomeDevedor" value="@Model.Dividas[i].NomeDevedor" />
-                    <input type="hidden" name="dividasConfirmadas[@i].EmailDevedor" value="@Model.Dividas[i].EmailDevedor" />
-                    <input type="hidden" name="dividasConfirmadas[@i].CpfDevedor" value="@Model.Dividas[i].CpfDevedor" />
-                    <input type="hidden" name="dividasConfirmadas[@i].TelefoneDevedor" value="@Model.Dividas[i].TelefoneDevedor" />
-                    <input type="hidden" name="dividasConfirmadas[@i].SenhaDevedor" value="@Model.Dividas[i].SenhaDevedor" />
+                    <input type="hidden" name="dividasConfirmadas[@i].NomeDevedor" value="@Model.Dividas[i].Nome" />
+                    <input type="hidden" name="dividasConfirmadas[@i].EmailDevedor" value="@Model.Dividas[i].Email" />
+                    <input type="hidden" name="dividasConfirmadas[@i].CpfDevedor" value="@Model.Dividas[i].Cpf" />
+                    <input type="hidden" name="dividasConfirmadas[@i].TelefoneDevedor" value="@Model.Dividas[i].Telefone" />
+                    <input type="hidden" name="dividasConfirmadas[@i].SenhaDevedor" value="@Model.Dividas[i].Senha" />
                 </tr>
             }
         </tbody>

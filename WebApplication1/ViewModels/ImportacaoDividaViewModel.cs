@@ -11,11 +11,11 @@ namespace WebApplication1.ViewModels
         public DateTime? DataVencimento { get; set; }
 
         // Dados do devedor
-        public string NomeDevedor { get; set; }
-        public string EmailDevedor { get; set; }
-        public string CpfDevedor { get; set; }
-        public string TelefoneDevedor { get; set; }
-        public string SenhaDevedor { get; set; }
+        public string Nome { get; set; }
+        public string Email { get; set; }
+        public string Cpf { get; set; }
+        public string Telefone { get; set; }
+        public string Senha{ get; set; }
     }
 
     public class ImportacaoDividaViewModel

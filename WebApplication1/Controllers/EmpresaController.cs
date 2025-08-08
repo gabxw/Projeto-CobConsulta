@@ -264,7 +264,7 @@ namespace WebApplication1.Controllers
                 Nome = d.Devedor.Name,
                 Email = d.Devedor.Email,
                 Telefone = d.Devedor.Telefone,
-                CPF = d.Devedor.Cpf,
+                Cpf = d.Devedor.Cpf,
                 Titulo = d.Titulo,
                 Descricao = d.Descricao,
                 Valor = d.Valor,
