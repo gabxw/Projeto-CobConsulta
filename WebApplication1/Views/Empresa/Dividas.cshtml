@@ -4,49 +4,69 @@
     ViewData["Title"] = "Minhas Dívidas";
 }
 
-<h1 class="text-2xl font-bold mb-4">Minhas Dívidas</h1>
+<div class="max-w-6xl mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-8 text-center">Minhas Dívidas</h1>
 
-<a href="/Empresa/CreateDivida" class="mb-4 inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-    Adicionar Nova Dívida
-</a>
+    <div class="flex flex-col md:flex-row justify-center gap-4 mb-8">
+        <a href="/Empresa/CreateDivida" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg shadow flex items-center gap-2">
+            <i class="fas fa-plus"></i> Adicionar Nova Dívida
+        </a>
+        <a href="/Empresa/ImportarDividas" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow flex items-center gap-2">
+            <i class="fas fa-file-import"></i> Importar Excel
+        </a>
+    </div>
 
-<a href="/Empresa/ImportarDividas" class="mb-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-    Importar Excel
-</a>
-
-
-<table class="min-w-full bg-white rounded shadow">
-    <thead>
-        <tr class="bg-gray-100">
-            <th class="px-4 py-2 text-left">Devedor</th>
-            <th class="px-4 py-2 text-left">Título</th>
-            <th class="px-4 py-2 text-left">Descrição</th>
-            <th class="px-4 py-2 text-left">Valor</th>
-            <th class="px-4 py-2 text-left">Vencimento</th>
-            <th class="px-4 py-2 text-left">Pagamento</th>
-            <th class="px-4 py-2 text-left">Criação</th>
-            <th class="px-4 py-2 text-left">Status</th>
-            <th class="px-4 py-2 text-left">Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr class="border-b hover:bg-gray-50">
-                <td class="px-4 py-2">@item.Devedor?.Name</td>
-                <td class="px-4 py-2">@item.Titulo</td>
-                <td class="px-4 py-2">@item.Descricao</td>
-                <td class="px-4 py-2">R$ @item.Valor.ToString("N2")</td>
-                <td class="px-4 py-2">@item.DataVencimento?.ToString("dd/MM/yyyy")</td>
-                <td class="px-4 py-2">@item.DataPagamento?.ToString("dd/MM/yyyy")</td>
-                <td class="px-4 py-2">@item.DataCriacao?.ToString("dd/MM/yyyy")</td>
-                <td class="px-4 py-2">@item.Status</td>
-                <td class="px-4 py-2 flex gap-2">
-                    <a asp-controller="Empresa" asp-action="DetalhesDivida" asp-route-id="@item.Id" class="text-blue-600 hover:underline">Detalhes</a>
-                    <a asp-controller="Empresa" asp-action="EditDivida" asp-route-id="@item.Id" class="text-yellow-600 hover:underline">Editar</a>
-                    <a asp-controller="Empresa" asp-action="ExcluirDivida" asp-route-id="@item.Id" class="text-red-600 hover:underline">Excluir</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white rounded-xl shadow-lg">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="px-4 py-3 text-left">Devedor</th>
+                    <th class="px-4 py-3 text-left">Título</th>
+                    <th class="px-4 py-3 text-left">Descrição</th>
+                    <th class="px-4 py-3 text-left">Valor</th>
+                    <th class="px-4 py-3 text-left">Vencimento</th>
+                    <th class="px-4 py-3 text-left">Pagamento</th>
+                    <th class="px-4 py-3 text-left">Criação</th>
+                    <th class="px-4 py-3 text-left">Status</th>
+                    <th class="px-4 py-3 text-left">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var statusColor = item.Status switch
+                    {
+                        "Pendente" => "bg-yellow-100 text-yellow-800",
+                        "Vencido" => "bg-red-100 text-red-800",
+                        "Quitado" => "bg-green-100 text-green-800",
+                        "Finalizado" => "bg-blue-100 text-blue-800",
+                        _ => "bg-gray-100 text-gray-800"
+                    };
+                <tr class="border-b hover:bg-gray-50 transition">
+                    <td class="px-4 py-3">@item.Devedor?.Name</td>
+                    <td class="px-4 py-3">@item.Titulo</td>
+                    <td class="px-4 py-3">@item.Descricao</td>
+                    <td class="px-4 py-3 font-semibold">R$ @item.Valor.ToString("N2")</td>
+                    <td class="px-4 py-3">@item.DataVencimento?.ToString("dd/MM/yyyy")</td>
+                    <td class="px-4 py-3">@item.DataPagamento?.ToString("dd/MM/yyyy")</td>
+                    <td class="px-4 py-3">@item.DataCriacao?.ToString("dd/MM/yyyy")</td>
+                    <td class="px-4 py-3">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold @statusColor">@item.Status</span>
+                    </td>
+                    <td class="px-4 py-3 flex gap-2">
+                        <a asp-controller="Empresa" asp-action="DetalhesDivida" asp-route-id="@item.Id" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded flex items-center gap-1 text-sm font-medium shadow">
+                            <i class="fas fa-info-circle"></i> Detalhes
+                        </a>
+                        <a asp-controller="Empresa" asp-action="EditDivida" asp-route-id="@item.Id" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 px-3 py-1 rounded flex items-center gap-1 text-sm font-medium shadow">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <a asp-controller="Empresa" asp-action="ExcluirDivida" asp-route-id="@item.Id" class="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded flex items-center gap-1 text-sm font-medium shadow">
+                            <i class="fas fa-trash"></i> Excluir
+                        </a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
