@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models;
-using System.Text.Json;
 
 namespace WebApplication1.Controllers
 {
@@ -27,41 +26,19 @@ namespace WebApplication1.Controllers
                 .Where(d => d.DevedorID == devedorId)
                 .ToListAsync();
 
-            var dividasSimplificadas = dividas.Select(d => new
-            {
+            var dividasSimplificadas = dividas.Select(d => new {
                 d.Id,
                 d.Titulo,
                 d.Descricao,
                 d.Valor,
                 d.Status,
-                DataVencimento = d.DataVencimento?.ToString("yyyy-MM-dd"),
-                DataPagamento = d.DataPagamento?.ToString("yyyy-MM-dd"),
+                DataVencimento = d.DataVencimento?.ToString("dd/MM/yyyy"),
+                DataPagamento = d.DataPagamento?.ToString("dd/MM/yyyy"),
                 Empresa = new { d.Empresa.Nome }
             }).ToList();
+            ViewBag.DividasJson = System.Text.Json.JsonSerializer.Serialize(dividasSimplificadas);
 
-            ViewBag.DividasJson = JsonSerializer.Serialize(dividasSimplificadas);
             return View(dividas);
-        }
-
-        // GET: Divida/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var divida = await _context.Dividas
-                .Include(d => d.Devedor)
-                .Include(d => d.Empresa)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (divida == null) return NotFound();
-
-            if (HttpContext.Session.GetString("Tipo") == "Empresa" &&
-                divida.EmpresaID != HttpContext.Session.GetInt32("Id"))
-            {
-                return RedirectToAction("AcessoNegado", "Login");
-            }
-
-            return View(divida);
         }
 
         // GET: Divida/Pagar/5
@@ -86,31 +63,38 @@ namespace WebApplication1.Controllers
             return View(divida);
         }
 
-        // POST: Divida/ConfirmarPagamento
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ConfirmarPagamento(int id, string metodo)
+        public async Task<IActionResult> PagarCartao(int id, string Nome, string Numero, string Validade, string CVV)
         {
             var divida = await _context.Dividas.FirstOrDefaultAsync(d => d.Id == id);
-
             if (divida == null)
             {
                 return NotFound();
             }
-
             if (divida.Status == "Pago")
             {
                 TempData["Mensagem"] = "Esta dívida já foi paga.";
                 return RedirectToAction("MinhasDividas");
             }
-
+            // Validação básica dos dados do cartão
+            if (string.IsNullOrWhiteSpace(Nome) ||
+                string.IsNullOrWhiteSpace(Numero) ||
+                string.IsNullOrWhiteSpace(Validade) ||
+                string.IsNullOrWhiteSpace(CVV) ||
+                Numero.Replace(" ", "").Length != 16 ||
+                !System.Text.RegularExpressions.Regex.IsMatch(Validade, "^(0[1-9]|1[0-2])\\/[0-9]{2}$") ||
+                !System.Text.RegularExpressions.Regex.IsMatch(CVV, "^[0-9]{3,4}$"))
+            {
+                TempData["Mensagem"] = "Dados do cartão inválidos.";
+                return RedirectToAction("Pagar", new { id });
+            }
             divida.Status = "Pago";
             divida.DataPagamento = DateTime.Now;
-
             await _context.SaveChangesAsync();
-
-            TempData["Mensagem"] = $"Pagamento por {metodo} realizado com sucesso!";
+            TempData["Mensagem"] = "Pagamento realizado com sucesso!";
             return RedirectToAction("MinhasDividas");
         }
+        // ...outros métodos existentes...
     }
 }

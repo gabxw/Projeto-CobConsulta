@@ -1,0 +1,79 @@
+@model WebApplication1.Models.Divida
+@{
+    ViewData["Title"] = "Pagamento";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container mx-auto py-8">
+    <h2 class="text-2xl font-bold mb-6">Pagamento da Dívida</h2>
+    <div class="bg-white rounded shadow-md p-6">
+        <p class="mb-4"><strong>Título:</strong> @Model.Titulo</p>
+        <p class="mb-4"><strong>Valor:</strong> R$ @Model.Valor.ToString("F2")</p>
+        <div id="opcoesPagamento" class="mb-6">
+            <h3 class="text-lg font-semibold mb-2">Escolha a forma de pagamento:</h3>
+            <div class="flex gap-4">
+                <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded" onclick="mostrarPagamento('cartao')">Cartão</button>
+                <button type="button" class="bg-green-500 text-white px-4 py-2 rounded" onclick="mostrarPagamento('pix')">Pix</button>
+                <button type="button" class="bg-yellow-500 text-white px-4 py-2 rounded" onclick="mostrarPagamento('boleto')">Boleto</button>
+            </div>
+        </div>
+        <div id="pagamentoCartao" class="hidden mt-6">
+            <h4 class="text-md font-semibold mb-2">Pagamento com Cartão</h4>
+            <form method="post" action="/Divida/PagarCartao/@Model.Id" onsubmit="return validarCartao()">
+                <div class="mb-2">
+                    <label class="block">Nome no cartão</label>
+                    <input type="text" name="Nome" class="border rounded px-2 py-1 w-full" required />
+                </div>
+                <div class="mb-2">
+                    <label class="block">Número do cartão</label>
+                    <input type="text" name="Numero" class="border rounded px-2 py-1 w-full" maxlength="19" required pattern="[0-9 ]{16,19}" />
+                </div>
+                <div class="mb-2 flex gap-2">
+                    <div>
+                        <label class="block">Validade</label>
+                        <input type="text" name="Validade" class="border rounded px-2 py-1 w-full" placeholder="MM/AA" required pattern="(0[1-9]|1[0-2])\/([0-9]{2})" />
+                    </div>
+                    <div>
+                        <label class="block">CVV</label>
+                        <input type="text" name="CVV" class="border rounded px-2 py-1 w-full" maxlength="4" required pattern="[0-9]{3,4}" />
+                    </div>
+                </div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded mt-2">Confirmar Pagamento</button>
+            </form>
+        </div>
+        <div id="pagamentoPix" class="hidden mt-6">
+            <h4 class="text-md font-semibold mb-2">Pagamento via Pix</h4>
+            <div class="flex flex-col items-center">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=@Guid.NewGuid()" alt="QR Code Pix" class="mb-2" />
+                <p class="text-gray-700">Escaneie o QR Code para pagar.</p>
+            </div>
+        </div>
+        <div id="pagamentoBoleto" class="hidden mt-6">
+            <h4 class="text-md font-semibold mb-2">Pagamento via Boleto</h4>
+            <div class="flex flex-col items-center">
+                <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fblog.tecnospeed.com.br%2Fboleto-bancario-tudo-que-voce-precisa-saber%2F&psig=AOvVaw0wByceLhZNwTxQWkqOi2pX&ust=1754738327579000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCNjq3emL-44DFQAAAAAdAAAAABAE" alt="Boleto" class="mb-2" style="max-width:300px;" />
+                <p class="text-gray-700">Use o boleto para realizar o pagamento.</p>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function mostrarPagamento(tipo) {
+            document.getElementById('pagamentoCartao').classList.add('hidden');
+            document.getElementById('pagamentoPix').classList.add('hidden');
+            document.getElementById('pagamentoBoleto').classList.add('hidden');
+            if (tipo === 'cartao') document.getElementById('pagamentoCartao').classList.remove('hidden');
+            if (tipo === 'pix') document.getElementById('pagamentoPix').classList.remove('hidden');
+            if (tipo === 'boleto') document.getElementById('pagamentoBoleto').classList.remove('hidden');
+        }
+        function validarCartao() {
+            const numero = document.querySelector('input[name="Numero"]').value.replace(/\s/g, '');
+            const validade = document.querySelector('input[name="Validade"]').value;
+            const cvv = document.querySelector('input[name="CVV"]').value;
+            if (!/^\d{16}$/.test(numero)) { alert('Número do cartão inválido!'); return false; }
+            if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(validade)) { alert('Validade inválida!'); return false; }
+            if (!/^\d{3,4}$/.test(cvv)) { alert('CVV inválido!'); return false; }
+            return true;
+        }
+    </script>
+}
