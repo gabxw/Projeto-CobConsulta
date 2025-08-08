@@ -281,34 +281,64 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ConfirmarImportacao(List<Divida> dividasConfirmadas)
+        public async Task<IActionResult> ConfirmarImportacao(List<ViewModels.DividaImportada> dividasConfirmadas)
         {
-            if (HttpContext.Session.GetInt32("EmpresaID") is not int empresaId)
+            if (HttpContext.Session.GetInt32("EmpresaId") is not int empresaId)
                 return RedirectToAction("Login", "Home");
 
-            foreach (var divida in dividasConfirmadas)
+            int registrosIgnorados = 0;
+            foreach (var importada in dividasConfirmadas)
             {
-                var devedorExistente = await _context.Devedores
-                    .FirstOrDefaultAsync(d => d.Cpf == divida.Devedor.Cpf);
+                if (string.IsNullOrWhiteSpace(importada.Cpf))
+                {
+                    registrosIgnorados++;
+                    continue;
+                }
 
+                var devedorExistente = await _context.Devedores
+                    .FirstOrDefaultAsync(d => d.Cpf == importada.Cpf);
+
+                Devedor devedor;
+                int devedorId = 0;
                 if (devedorExistente != null)
                 {
-                    divida.DevedorID = devedorExistente.Id;
-                    divida.Devedor = null;
+                    devedorId = devedorExistente.Id;
+                    devedor = null;
                 }
                 else
                 {
-                    divida.Devedor.Senha = "importado";
+                    devedor = new Devedor
+                    {
+                        Name = importada.Nome,
+                        Email = importada.Email,
+                        Cpf = importada.Cpf,
+                        Telefone = importada.Telefone,
+                        Senha = string.IsNullOrEmpty(importada.Senha) ? "importado" : importada.Senha
+                    };
                 }
 
-                divida.EmpresaID = empresaId;
-                divida.DataCriacao = DateTime.Now;
+                var divida = new Divida
+                {
+                    Titulo = importada.Titulo,
+                    Descricao = importada.Descricao,
+                    Valor = importada.Valor,
+                    Status = importada.Status,
+                    DataVencimento = importada.DataVencimento,
+                    EmpresaID = empresaId,
+                    DataCriacao = DateTime.Now,
+                    DevedorID = devedorId
+                };
+                if (devedor != null)
+                {
+                    divida.Devedor = devedor;
+                }
+
                 _context.Dividas.Add(divida);
             }
 
             await _context.SaveChangesAsync();
             TempData["Sucesso"] = "Dívidas importadas com sucesso.";
-            return RedirectToAction("Dividas");
+            return RedirectToAction("Dividas", "Empresa");
         }
 
 
@@ -416,7 +446,9 @@ namespace WebApplication1.Controllers
                 d.DataPagamento.HasValue &&
                 d.DataCriacao.HasValue &&
                 d.DataCriacao.Value > DateTime.MinValue)
-            .Select(d => (d.DataPagamento.Value - d.DataCriacao.Value).TotalDays)
+            .Select(d => (d.DataPagamento.HasValue && d.DataCriacao.HasValue)
+                ? (d.DataPagamento.Value - d.DataCriacao.Value).TotalDays
+                : 0)
             .ToList();
 
             double mediaDias = pagamentosQuitados.Any() ? pagamentosQuitados.Average() : 0;
@@ -429,12 +461,12 @@ namespace WebApplication1.Controllers
 
             decimal faturamentoMesAtual = dividasDaEmpresa
                 .Where(d => (d.Status == "Quitado" || d.Status == "Finalizado") && d.DataPagamento.HasValue)
-                .Where(d => d.DataPagamento.Value.Date >= primeiroDiaMesAtual.Date && d.DataPagamento.Value.Date <= hoje)
+                .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Date >= primeiroDiaMesAtual.Date && d.DataPagamento.Value.Date <= hoje)
                 .Sum(d => d.Valor);
 
             decimal faturamentoMesAnterior = dividasDaEmpresa
                 .Where(d => (d.Status == "Quitado" || d.Status == "Finalizado") && d.DataPagamento.HasValue)
-                .Where(d => d.DataPagamento.Value.Date >= primeiroDiaMesAnterior.Date && d.DataPagamento.Value.Date <= fimMesAnterior.Date)
+                .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Date >= primeiroDiaMesAnterior.Date && d.DataPagamento.Value.Date <= fimMesAnterior.Date)
                 .Sum(d => d.Valor);
 
             var alertas = dividasDaEmpresa
@@ -447,7 +479,7 @@ namespace WebApplication1.Controllers
                     Titulo = d.Titulo,
                     DevedorNome = d.Devedor?.Name ?? "",
                     Valor = d.Valor,
-                    DiasAtraso = (hoje - d.DataVencimento.Value.Date).Days
+                    DiasAtraso = d.DataVencimento.HasValue ? (hoje - d.DataVencimento.Value.Date).Days : 0
                 })
                 .ToList();
 
@@ -464,7 +496,7 @@ namespace WebApplication1.Controllers
 
             foreach (var d in pagosRecentes)
             {
-                var dias = (int)(hoje - d.DataPagamento.Value.Date).TotalDays;
+                var dias = d.DataPagamento.HasValue ? (int)(hoje - d.DataPagamento.Value.Date).TotalDays : 0;
                 var quando = dias == 0 ? "hoje" : $"{dias} dia(s) atrás";
                 notificacoes.Add($"Devedor {d.Devedor?.Name} quitou R$ {d.Valor.ToString("N2")} em \"{d.Titulo}\" {quando}.");
             }
@@ -490,7 +522,7 @@ namespace WebApplication1.Controllers
 
             foreach (var d in proximas)
             {
-                var dias = (int)(d.DataVencimento.Value.Date - hoje).TotalDays;
+                var dias = d.DataVencimento.HasValue ? (int)(d.DataVencimento.Value.Date - hoje).TotalDays : 0;
                 notificacoes.Add($"Dívida \"{d.Titulo}\" de {d.Devedor?.Name} vence em {dias} dia(s).");
             }
 
