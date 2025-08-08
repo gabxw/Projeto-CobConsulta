@@ -227,7 +227,6 @@ namespace WebApplication1.Controllers
             if (!EhEmpresaLogada())
                 return RedirectToAction("AcessoNegado", "Login");
 
-            // Garante que a View receba um modelo vazio para não dar erro no Razor
             return View(new ImportacaoDividaViewModel());
         }
 
@@ -240,68 +239,57 @@ namespace WebApplication1.Controllers
             if (excelFile == null || excelFile.Length == 0)
             {
                 ModelState.AddModelError("", "Selecione um arquivo Excel.");
-                return View(new ImportacaoDividaViewModel());
-            }
-
-            // Valida extensão
-            var extensao = Path.GetExtension(excelFile.FileName).ToLower();
-            if (extensao != ".xlsx")
-            {
-                ModelState.AddModelError("", "O arquivo deve estar no formato .xlsx (Excel).");
-                return View(new ImportacaoDividaViewModel());
+                return View();
             }
 
             int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
 
-            try
+            using var stream = new MemoryStream();
+            await excelFile.CopyToAsync(stream);
+            stream.Position = 0;
+
+            var resultado = ExcelImportHelper.ProcessarExcel(stream, empresaId);
+
+            if (resultado.Erros.Any())
             {
-                using var stream = new MemoryStream();
-                await excelFile.CopyToAsync(stream);
-                stream.Position = 0;
-
-                var resultado = ExcelImportHelper.ProcessarExcel(stream, empresaId);
-
-                if (resultado.Erros.Any())
+                var vmErro = new ImportacaoDividaViewModel
                 {
-                    return View("ImportarDividas", new ImportacaoDividaViewModel
-                    {
-                        Erros = resultado.Erros
-                    });
-                }
-
-                // Converte para ViewModel de pré-visualização
-                var dividasImportadas = resultado.Dividas.Select(d => new DividaImportada
-                {
-                    Nome = d.Devedor.Name,
-                    Email = d.Devedor.Email,
-                    Telefone = d.Devedor.Telefone,
-                    CPF = d.Devedor.Cpf,
-                    Titulo = d.Titulo,
-                    Descricao = d.Descricao,
-                    Valor = d.Valor,
-                    Status = d.Status,
-                    DataVencimento = d.DataVencimento ?? DateTime.Now
-                }).ToList();
-
-                return View("ConfirmarImportacao", new ImportacaoDividaViewModel
-                {
-                    Dividas = dividasImportadas
-                });
+                    Erros = resultado.Erros
+                };
+                return View("ImportarDividas", vmErro);
             }
-            catch (Exception ex)
+
+            var dividasImportadas = resultado.Dividas.Select(d => new DividaImportada
             {
-                ModelState.AddModelError("", $"Erro ao processar o arquivo: {ex.Message}");
-                return View(new ImportacaoDividaViewModel());
-            }
+                Nome = d.Devedor.Name,
+                Email = d.Devedor.Email,
+                Telefone = d.Devedor.Telefone,
+                CPF = d.Devedor.Cpf,
+                Titulo = d.Titulo,
+                Descricao = d.Descricao,
+                Valor = d.Valor,
+                Status = d.Status,
+                DataVencimento = d.DataVencimento
+            }).ToList();
+
+            var vm = new ImportacaoDividaViewModel
+            {
+                Dividas = dividasImportadas
+            };
+
+            return View("ConfirmarImportacao", vm);
         }
 
         [HttpPost]
         public async Task<IActionResult> ConfirmarImportacao(List<DividaImportada> dividasConfirmadas)
         {
-            if (!EhEmpresaLogada())
-                return RedirectToAction("AcessoNegado", "Login");
-
             int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
+
+            if (dividasConfirmadas == null || !dividasConfirmadas.Any())
+            {
+                TempData["MensagemErro"] = "Nenhuma dívida foi confirmada para importação.";
+                return RedirectToAction("ImportarDividas");
+            }
 
             foreach (var item in dividasConfirmadas)
             {

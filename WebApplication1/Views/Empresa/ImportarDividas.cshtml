@@ -8,7 +8,7 @@
 
 <form asp-action="ImportarDividas" method="post" enctype="multipart/form-data" class="space-y-4">
     <div>
-        <label for="excelFile" class="block font-semibold">Selecione o arquivo:</label>
+        <label class="block font-semibold">Selecione o arquivo:</label>
         <input type="file" name="excelFile" class="border border-gray-300 p-2 rounded w-full" />
     </div>
 
@@ -19,13 +19,13 @@
 
 @if (Model?.Erros?.Any() == true)
 {
-        <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            <strong>Erros encontrados:</strong>
-            <ul class="list-disc pl-5">
+    <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <strong>Erros encontrados:</strong>
+        <ul class="list-disc pl-5">
             @foreach (var erro in Model.Erros)
             {
-                        <li>@erro</li>
+                <li>@erro</li>
             }
-            </ul>
-        </div>
+        </ul>
+    </div>
 }

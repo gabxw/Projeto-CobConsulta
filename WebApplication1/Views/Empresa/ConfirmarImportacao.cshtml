@@ -4,88 +4,70 @@
     ViewData["Title"] = "Confirmar Importação";
 }
 
-<h2 class="text-2xl font-bold mb-4">Confirmação de Importação</h2>
+<h2>Confirmar Importação</h2>
 
-@if (Model?.Dividas == null || !Model.Dividas.Any())
-{
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            Nenhuma dívida para importar.
-        </div>
-}
-else
-{
-        <form asp-action="ConfirmarImportacao" method="post">
-            <div class="overflow-x-auto">
-                <table class="min-w-full border-collapse border border-gray-300 text-sm">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="border border-gray-300 px-2 py-1">Nome</th>
-                            <th class="border border-gray-300 px-2 py-1">Email</th>
-                            <th class="border border-gray-300 px-2 py-1">Telefone</th>
-                            <th class="border border-gray-300 px-2 py-1">CPF</th>
-                            <th class="border border-gray-300 px-2 py-1">Título</th>
-                            <th class="border border-gray-300 px-2 py-1">Descrição</th>
-                            <th class="border border-gray-300 px-2 py-1">Valor</th>
-                            <th class="border border-gray-300 px-2 py-1">Status</th>
-                            <th class="border border-gray-300 px-2 py-1">Vencimento</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @for (int i = 0; i < Model.Dividas.Count; i++)
-                    {
-                                <tr>
-                                    <td class="border border-gray-300 px-2 py-1">
-                                @Model.Dividas[i].Nome
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Nome" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
-                                @Model.Dividas[i].Email
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Email" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
-                                @Model.Dividas[i].Telefone
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Telefone" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
-                                @Model.Dividas[i].CPF
-                                        <input type="hidden" asp-for="@Model.Dividas[i].CPF" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
-                                @Model.Dividas[i].Titulo
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Titulo" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
-                                @Model.Dividas[i].Descricao
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Descricao" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
-                                @Model.Dividas[i].Valor.ToString("N2")
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Valor" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
-                                @Model.Dividas[i].Status
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Status" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
-                                @(Model.Dividas[i].DataVencimento.HasValue
-                                ? Model.Dividas[i].DataVencimento.Value.ToString("dd/MM/yyyy")
-                                : "")
-                                        <input type="hidden" asp-for="@Model.Dividas[i].DataVencimento" />
-                                    </td>
-                                </tr>
-                    }
-                    </tbody>
-                </table>
-            </div>
+<form asp-action="ConfirmarImportacao" method="post">
+    <table class="table-auto border-collapse border border-gray-400 w-full">
+        <thead>
+            <tr class="bg-gray-200">
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Título</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Status</th>
+                <th>Data Vencimento</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Dividas.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Model.Dividas[i].Nome
+                        <input type="hidden" name="dividasConfirmadas[@i].Nome" value="@Model.Dividas[i].Nome" />
+                    </td>
+                    <td>
+                        @Model.Dividas[i].CPF
+                        <input type="hidden" name="dividasConfirmadas[@i].CPF" value="@Model.Dividas[i].CPF" />
+                    </td>
+                    <td>
+                        @Model.Dividas[i].Email
+                        <input type="hidden" name="dividasConfirmadas[@i].Email" value="@Model.Dividas[i].Email" />
+                    </td>
+                    <td>
+                        @Model.Dividas[i].Telefone
+                        <input type="hidden" name="dividasConfirmadas[@i].Telefone" value="@Model.Dividas[i].Telefone" />
+                    </td>
+                    <td>
+                        @Model.Dividas[i].Titulo
+                        <input type="hidden" name="dividasConfirmadas[@i].Titulo" value="@Model.Dividas[i].Titulo" />
+                    </td>
+                    <td>
+                        @Model.Dividas[i].Descricao
+                        <input type="hidden" name="dividasConfirmadas[@i].Descricao" value="@Model.Dividas[i].Descricao" />
+                    </td>
+                    <td>
+                        @Model.Dividas[i].Valor
+                        <input type="hidden" name="dividasConfirmadas[@i].Valor" value="@Model.Dividas[i].Valor" />
+                    </td>
+                    <td>
+                        @Model.Dividas[i].Status
+                        <input type="hidden" name="dividasConfirmadas[@i].Status" value="@Model.Dividas[i].Status" />
+                    </td>
+                    <td>
+                        @(Model.Dividas[i].DataVencimento?.ToString("dd/MM/yyyy") ?? "")
+                        <input type="hidden" name="dividasConfirmadas[@i].DataVencimento"
+                               value="@(Model.Dividas[i].DataVencimento?.ToString("yyyy-MM-dd") ?? "")" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-            <div class="flex items-center gap-4 mt-4">
-                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                    Confirmar Importação
-                </button>
-
-                <a asp-action="ImportarDividas" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-                    Cancelar
-                </a>
-            </div>
-        </form>
-}
+    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded mt-4">
+        Confirmar Importação
+    </button>
+</form>
