@@ -281,56 +281,36 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ConfirmarImportacao(List<DividaImportada> dividasConfirmadas)
+        public async Task<IActionResult> ConfirmarImportacao(List<Divida> dividasConfirmadas)
         {
-            int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
+            if (HttpContext.Session.GetInt32("EmpresaID") is not int empresaId)
+                return RedirectToAction("Login", "Home");
 
-            if (dividasConfirmadas == null || !dividasConfirmadas.Any())
-            {
-                TempData["MensagemErro"] = "Nenhuma dívida foi confirmada para importação.";
-                return RedirectToAction("ImportarDividas");
-            }
-
-            foreach (var item in dividasConfirmadas)
+            foreach (var divida in dividasConfirmadas)
             {
                 var devedorExistente = await _context.Devedores
-                    .FirstOrDefaultAsync(d => d.Cpf == item.CPF);
+                    .FirstOrDefaultAsync(d => d.Cpf == divida.Devedor.Cpf);
 
-                if (devedorExistente == null)
+                if (devedorExistente != null)
                 {
-                    devedorExistente = new Devedor
-                    {
-                        Name = item.Nome,
-                        Email = item.Email,
-                        Cpf = item.CPF,
-                        Senha = "importado",
-                        Telefone = item.Telefone
-                    };
-
-                    _context.Devedores.Add(devedorExistente);
-                    await _context.SaveChangesAsync();
+                    divida.DevedorID = devedorExistente.Id;
+                    divida.Devedor = null;
+                }
+                else
+                {
+                    divida.Devedor.Senha = "importado";
                 }
 
-                var novaDivida = new Divida
-                {
-                    EmpresaID = empresaId,
-                    DevedorID = devedorExistente.Id,
-                    Titulo = item.Titulo,
-                    Descricao = item.Descricao,
-                    Valor = (int)item.Valor,
-                    DataVencimento = item.DataVencimento,
-                    DataCriacao = DateTime.Now,
-                    Status = item.Status
-                };
-
-                _context.Dividas.Add(novaDivida);
+                divida.EmpresaID = empresaId;
+                divida.DataCriacao = DateTime.Now;
+                _context.Dividas.Add(divida);
             }
 
             await _context.SaveChangesAsync();
-
-            TempData["MensagemSucesso"] = "Importação concluída com sucesso.";
+            TempData["Sucesso"] = "Dívidas importadas com sucesso.";
             return RedirectToAction("Dividas");
         }
+
 
 
         public async Task<IActionResult> Dashboard()

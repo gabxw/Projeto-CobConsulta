@@ -1,61 +1,52 @@
-﻿using OfficeOpenXml;
+﻿// /Helpers/ExcelImportHelper.cs
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using ClosedXML.Excel;
 using WebApplication1.Models;
 
 namespace WebApplication1.Helpers
 {
-    public class ImportResult
-    {
-        public List<Divida> Dividas { get; set; } = new();
-        public List<string> Erros { get; set; } = new();
-    }
-
     public static class ExcelImportHelper
     {
         public static ImportResult ProcessarExcel(Stream excelStream, int empresaId)
         {
-            // EPPlus 8+ exige definir o contexto de licença ANTES de qualquer uso
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
             var resultado = new ImportResult();
 
             try
             {
-                using var package = new ExcelPackage(excelStream);
-                var worksheet = package.Workbook.Worksheets.FirstOrDefault();
-
+                using var workbook = new XLWorkbook(excelStream);
+                var worksheet = workbook.Worksheets.FirstOrDefault();
                 if (worksheet == null)
                 {
                     resultado.Erros.Add("A planilha está vazia ou não foi encontrada.");
                     return resultado;
                 }
 
-                int linha = 2;
+                int linha = 2; // assume cabeçalho na linha 1
                 while (true)
                 {
-                    var nome = worksheet.Cells[linha, 1].Text?.Trim();
-                    var telefone = worksheet.Cells[linha, 2].Text?.Trim();
-                    var email = worksheet.Cells[linha, 3].Text?.Trim();
-                    var cpf = worksheet.Cells[linha, 4].Text?.Trim();
-                    var titulo = worksheet.Cells[linha, 5].Text?.Trim();
-                    var descricao = worksheet.Cells[linha, 6].Text?.Trim();
-                    var valorTexto = worksheet.Cells[linha, 7].Text?.Trim();
-                    var status = worksheet.Cells[linha, 8].Text?.Trim();
-                    var vencimentoTexto = worksheet.Cells[linha, 9].Text?.Trim();
+                    var nome = worksheet.Cell(linha, 1).GetString()?.Trim();
+                    var telefone = worksheet.Cell(linha, 2).GetString()?.Trim();
+                    var email = worksheet.Cell(linha, 3).GetString()?.Trim();
+                    var cpf = worksheet.Cell(linha, 4).GetString()?.Trim();
+                    var titulo = worksheet.Cell(linha, 5).GetString()?.Trim();
+                    var descricao = worksheet.Cell(linha, 6).GetString()?.Trim();
+                    var valorTexto = worksheet.Cell(linha, 7).GetString()?.Trim();
+                    var status = worksheet.Cell(linha, 8).GetString()?.Trim();
+                    var vencimentoTexto = worksheet.Cell(linha, 9).GetString()?.Trim();
 
-                    // Se linha estiver completamente vazia → fim dos dados
-                    if (string.IsNullOrWhiteSpace(nome) &&
-                        string.IsNullOrWhiteSpace(cpf) &&
-                        string.IsNullOrWhiteSpace(titulo))
+                    // fim de dados
+                    if (string.IsNullOrWhiteSpace(nome)
+                        && string.IsNullOrWhiteSpace(cpf)
+                        && string.IsNullOrWhiteSpace(titulo))
+                    {
                         break;
+                    }
 
-                    // Validação dos campos
-                    List<string> errosLinha = new();
+                    var errosLinha = new List<string>();
 
                     if (string.IsNullOrWhiteSpace(nome)) errosLinha.Add("Nome é obrigatório.");
                     if (string.IsNullOrWhiteSpace(telefone)) errosLinha.Add("Telefone é obrigatório.");
@@ -63,10 +54,25 @@ namespace WebApplication1.Helpers
                     if (string.IsNullOrWhiteSpace(cpf) || !IsValidCpf(cpf)) errosLinha.Add("CPF inválido.");
                     if (string.IsNullOrWhiteSpace(titulo)) errosLinha.Add("Título é obrigatório.");
                     if (string.IsNullOrWhiteSpace(descricao)) errosLinha.Add("Descrição é obrigatória.");
-                    if (!decimal.TryParse(valorTexto, NumberStyles.Any, CultureInfo.InvariantCulture, out var valor))
+
+                    // tenta parse do valor (pt-BR e invariant)
+                    if (!decimal.TryParse(valorTexto, NumberStyles.Any, new CultureInfo("pt-BR"), out var valor) &&
+                        !decimal.TryParse(valorTexto, NumberStyles.Any, CultureInfo.InvariantCulture, out valor))
+                    {
                         errosLinha.Add("Valor inválido.");
-                    if (!DateTime.TryParse(vencimentoTexto, out var vencimento))
-                        errosLinha.Add("Data de vencimento inválida.");
+                    }
+
+                    DateTime? vencimento = null;
+                    if (!string.IsNullOrWhiteSpace(vencimentoTexto))
+                    {
+                        if (DateTime.TryParse(vencimentoTexto, new CultureInfo("pt-BR"), DateTimeStyles.None, out var dt1))
+                            vencimento = dt1;
+                        else if (DateTime.TryParse(vencimentoTexto, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt2))
+                            vencimento = dt2;
+                        else
+                            errosLinha.Add("Data de vencimento inválida.");
+                    }
+
                     if (string.IsNullOrWhiteSpace(status)) status = "Pendente";
 
                     if (errosLinha.Any())
@@ -76,14 +82,13 @@ namespace WebApplication1.Helpers
                         continue;
                     }
 
-                    // Criar objeto devedor e dívida
                     var devedor = new Devedor
                     {
                         Name = nome,
                         Email = email,
                         Cpf = cpf,
                         Telefone = telefone,
-                        Senha = "importado"
+                        Senha = "importado" // placeholder
                     };
 
                     var divida = new Divida
@@ -112,13 +117,23 @@ namespace WebApplication1.Helpers
 
         private static bool IsValidEmail(string email)
         {
-            return Regex.IsMatch(email ?? "", @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static bool IsValidCpf(string cpf)
         {
-            cpf = Regex.Replace(cpf ?? "", "[^0-9]", "");
-            return cpf.Length == 11;
+            // validação simples (pode ser incrementada). Aqui, apenas checamos presença de dígitos.
+            if (string.IsNullOrWhiteSpace(cpf)) return false;
+            var apenasDigitos = new string(cpf.Where(char.IsDigit).ToArray());
+            return apenasDigitos.Length >= 8; // ajuste conforme sua regra
         }
     }
 }

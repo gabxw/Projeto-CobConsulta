@@ -1,4 +1,6 @@
-﻿namespace WebApplication1.ViewModels
+﻿using WebApplication1.Models;
+
+namespace WebApplication1.ViewModels
 {
     public class DividaImportada
     {
@@ -11,6 +13,7 @@
         public decimal Valor { get; set; }
         public string Status { get; set; }
         public DateTime? DataVencimento { get; set; }
+        public Devedor Devedor { get; set; } = new Devedor();
     }
 
     public class ImportacaoDividaViewModel

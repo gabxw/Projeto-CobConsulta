@@ -4,24 +4,21 @@
     ViewData["Title"] = "Importar Dívidas";
 }
 
-<h2 class="text-2xl font-bold mb-4">Importar Dívidas via Excel</h2>
+<h2 class="mt-4 mb-3 text-lg font-bold">Importar Dívidas</h2>
 
-<form asp-action="ImportarDividas" method="post" enctype="multipart/form-data" class="space-y-4">
+<form asp-action="ImportarDividas" asp-controller="Empresa" method="post" enctype="multipart/form-data" class="space-y-4">
     <div>
-        <label class="block font-semibold">Selecione o arquivo:</label>
-        <input type="file" name="excelFile" class="border border-gray-300 p-2 rounded w-full" />
+        <label for="excelFile" class="block font-medium">Selecionar Arquivo Excel</label>
+        <input type="file" name="excelFile" id="excelFile" class="border border-gray-300 p-2 rounded w-full" />
     </div>
-
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Enviar
-    </button>
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enviar</button>
 </form>
 
-@if (Model?.Erros?.Any() == true)
+@if (Model?.Erros != null && Model.Erros.Any())
 {
-    <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-        <strong>Erros encontrados:</strong>
-        <ul class="list-disc pl-5">
+    <div class="mt-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <h4 class="font-bold">Erros encontrados durante a importação:</h4>
+        <ul class="list-disc list-inside mt-2">
             @foreach (var erro in Model.Erros)
             {
                 <li>@erro</li>
