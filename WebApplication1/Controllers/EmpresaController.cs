@@ -168,12 +168,11 @@ namespace WebApplication1.Controllers
 
             int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
 
-            var devedorEhValido = await _context.Dividas
-                .AnyAsync(d => d.DevedorID == model.DevedorID && d.EmpresaID == empresaId);
-
-            if (!devedorEhValido)
+            // Validação básica do devedor
+            var devedorExiste = await _context.Devedores.AnyAsync(d => d.Id == model.DevedorID);
+            if (!devedorExiste)
             {
-                ModelState.AddModelError("DevedorID", "Esse devedor não está associado à sua empresa.");
+                ModelState.AddModelError("DevedorID", "Selecione um devedor válido.");
             }
 
             if (ModelState.IsValid)
@@ -185,17 +184,10 @@ namespace WebApplication1.Controllers
                 _context.Dividas.Add(model);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Dividas");
+                return RedirectToAction("Dashboard");
             }
 
-            // Recarrega dropdown para repintar a view com erro
-            var devedores = _context.Dividas
-                .Include(d => d.Devedor)
-                .Where(d => d.EmpresaID == empresaId && d.Devedor != null)
-                .Select(d => d.Devedor)
-                .Distinct()
-                .ToList();
-
+            var devedores = await _context.Devedores.ToListAsync();
             ViewBag.Devedores = new SelectList(devedores, "Id", "Name", model.DevedorID);
 
             return View(model);
@@ -207,15 +199,7 @@ namespace WebApplication1.Controllers
             if (!EhEmpresaLogada())
                 return RedirectToAction("AcessoNegado", "Login");
 
-            int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
-
-            var devedores = await _context.Dividas
-                .Include(d => d.Devedor)
-                .Where(d => d.EmpresaID == empresaId && d.Devedor != null)
-                .Select(d => d.Devedor)
-                .Distinct()
-                .ToListAsync();
-
+            var devedores = await _context.Devedores.ToListAsync();
             ViewBag.Devedores = new SelectList(devedores, "Id", "Name");
 
             return View();

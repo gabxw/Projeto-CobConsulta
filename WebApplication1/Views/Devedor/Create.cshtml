@@ -1,0 +1,39 @@
+@model WebApplication1.Models.Devedor
+@{
+    ViewData["Title"] = "Cadastrar Devedor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="max-w-lg mx-auto mt-10 bg-white rounded shadow-lg p-8">
+    <h2 class="text-2xl font-bold mb-6 text-center text-blue-700">Cadastro de Devedor</h2>
+    <form asp-action="Create" method="post" class="space-y-4">
+        <div>
+            <label asp-for="Name" class="block text-sm font-semibold mb-1">Nome</label>
+            <input asp-for="Name" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <span asp-validation-for="Name" class="text-red-500 text-xs"></span>
+        </div>
+        <div>
+            <label asp-for="Email" class="block text-sm font-semibold mb-1">E-mail</label>
+            <input asp-for="Email" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <span asp-validation-for="Email" class="text-red-500 text-xs"></span>
+        </div>
+        <div>
+            <label asp-for="Senha" class="block text-sm font-semibold mb-1">Senha</label>
+            <input asp-for="Senha" type="password" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <span asp-validation-for="Senha" class="text-red-500 text-xs"></span>
+        </div>
+        <div>
+            <label asp-for="Cpf" class="block text-sm font-semibold mb-1">CPF</label>
+            <input asp-for="Cpf" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <span asp-validation-for="Cpf" class="text-red-500 text-xs"></span>
+        </div>
+        <div>
+            <label asp-for="Telefone" class="block text-sm font-semibold mb-1">Telefone</label>
+            <input asp-for="Telefone" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <span asp-validation-for="Telefone" class="text-red-500 text-xs"></span>
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded mt-4 transition">Cadastrar</button>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -30,6 +30,7 @@
                     <a asp-controller="Empresa" asp-action="Dashboard" class="font-medium @(activeMenu.Contains("dashboard") ? "text-blue-600" : "text-gray-600") transition hover:text-blue-800">Dashboard</a>
                     <a asp-controller="Empresa" asp-action="Dividas" class="font-medium @(activeMenu.Contains("dividas") ? "text-blue-600" : "text-gray-600") transition hover:text-blue-800">Dívidas</a>
                     <a asp-controller="Empresa" asp-action="CreateDivida" class="font-medium @(activeMenu.Contains("createdivida") ? "text-blue-600" : "text-gray-600") transition hover:text-blue-800">Criar Dívida</a>
+                    <a asp-controller="Devedor" asp-action="Create" class="font-medium @(activeMenu.Contains("devedor") ? "text-blue-600" : "text-gray-600") transition hover:text-blue-800">Cadastrar Devedor</a>
                 }
                 else
                 {
