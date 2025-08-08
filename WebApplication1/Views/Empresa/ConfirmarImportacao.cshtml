@@ -26,27 +26,27 @@
             {
                 <tr>
                     <td>@Model.Dividas[i].Titulo</td>
-                    <td>@Model.Dividas[i].Devedor.Name</td>
-                    <td>@Model.Dividas[i].Devedor.Email</td>
-                    <td>@Model.Dividas[i].Devedor.Cpf</td>
-                    <td>@Model.Dividas[i].Devedor.Telefone</td>
+                    <td>@Model.Dividas[i].NomeDevedor</td>
+                    <td>@Model.Dividas[i].EmailDevedor</td>
+                    <td>@Model.Dividas[i].CpfDevedor</td>
+                    <td>@Model.Dividas[i].TelefoneDevedor</td>
                     <td>@Model.Dividas[i].Descricao</td>
                     <td>@Model.Dividas[i].Valor</td>
                     <td>@Model.Dividas[i].Status</td>
                     <td>@(Model.Dividas[i].DataVencimento?.ToString("dd/MM/yyyy"))</td>
 
-                    <!-- Hidden inputs para post -->
+                    <!-- Hidden inputs -->
                     <input type="hidden" name="dividasConfirmadas[@i].Titulo" value="@Model.Dividas[i].Titulo" />
                     <input type="hidden" name="dividasConfirmadas[@i].Descricao" value="@Model.Dividas[i].Descricao" />
                     <input type="hidden" name="dividasConfirmadas[@i].Valor" value="@Model.Dividas[i].Valor" />
                     <input type="hidden" name="dividasConfirmadas[@i].Status" value="@Model.Dividas[i].Status" />
-                    <input type="hidden" name="dividasConfirmadas[@i].DataVencimento" value="@(Model.Dividas[i].DataVencimento?.ToString("yyyy-MM-dd"))" />
+                    <input type="hidden" name="dividasConfirmadas[@i].DataVencimento" value="@Model.Dividas[i].DataVencimento?.ToString("yyyy-MM-dd")" />
 
-                    <input type="hidden" name="dividasConfirmadas[@i].Devedor.Name" value="@Model.Dividas[i].Devedor.Name" />
-                    <input type="hidden" name="dividasConfirmadas[@i].Devedor.Email" value="@Model.Dividas[i].Devedor.Email" />
-                    <input type="hidden" name="dividasConfirmadas[@i].Devedor.Cpf" value="@Model.Dividas[i].Devedor.Cpf" />
-                    <input type="hidden" name="dividasConfirmadas[@i].Devedor.Telefone" value="@Model.Dividas[i].Devedor.Telefone" />
-                    <input type="hidden" name="dividasConfirmadas[@i].Devedor.Senha" value="@Model.Dividas[i].Devedor.Senha" />
+                    <input type="hidden" name="dividasConfirmadas[@i].NomeDevedor" value="@Model.Dividas[i].NomeDevedor" />
+                    <input type="hidden" name="dividasConfirmadas[@i].EmailDevedor" value="@Model.Dividas[i].EmailDevedor" />
+                    <input type="hidden" name="dividasConfirmadas[@i].CpfDevedor" value="@Model.Dividas[i].CpfDevedor" />
+                    <input type="hidden" name="dividasConfirmadas[@i].TelefoneDevedor" value="@Model.Dividas[i].TelefoneDevedor" />
+                    <input type="hidden" name="dividasConfirmadas[@i].SenhaDevedor" value="@Model.Dividas[i].SenhaDevedor" />
                 </tr>
             }
         </tbody>
