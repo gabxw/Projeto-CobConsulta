@@ -14,6 +14,49 @@
         <a href="/Empresa/ImportarDividas" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow flex items-center gap-2">
             <i class="fas fa-file-import"></i> Importar Excel
         </a>
+        <button type="button" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg shadow flex items-center gap-2" onclick="toggleFiltro()">
+            <i class="fas fa-filter"></i> Filtrar
+        </button>
+    </div>
+
+    <div id="filtroForm" class="mb-8 bg-gray-100 rounded-lg shadow p-6" style="display:none;">
+        <form method="get" action="/Empresa/Dividas" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block font-semibold mb-1">Status</label>
+                <select name="status" class="form-select w-full">
+                    <option value="">Todos</option>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Vencido">Vencido</option>
+                    <option value="Quitado">Quitado</option>
+                    <option value="Finalizado">Finalizado</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Devedor</label>
+                <input type="text" name="devedor" class="form-input w-full" placeholder="Nome do devedor" />
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Valor mínimo</label>
+                <input type="number" step="0.01" name="valorMin" class="form-input w-full" />
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Valor máximo</label>
+                <input type="number" step="0.01" name="valorMax" class="form-input w-full" />
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Data inicial</label>
+                <input type="date" name="dataInicio" class="form-input w-full" />
+            </div>
+            <div>
+                <label class="block font-semibold mb-1">Data final</label>
+                <input type="date" name="dataFim" class="form-input w-full" />
+            </div>
+            <div class="md:col-span-4 flex justify-end items-end">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow flex items-center gap-2">
+                    <i class="fas fa-search"></i> Aplicar Filtro
+                </button>
+            </div>
+        </form>
     </div>
 
     <div class="overflow-x-auto">
@@ -70,3 +113,10 @@
         </table>
     </div>
 </div>
+
+<script>
+    function toggleFiltro() {
+        var form = document.getElementById('filtroForm');
+        form.style.display = form.style.display === 'none' ? '' : 'none';
+    }
+</script>

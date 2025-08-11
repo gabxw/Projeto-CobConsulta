@@ -40,11 +40,29 @@ namespace WebApplication1.Controllers
 
             int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
 
-            var dividas = await _context.Dividas
-                .Include(d => d.Devedor)
-                .Where(d => d.EmpresaID == empresaId)
-                .OrderByDescending(d => d.DataCriacao)
-                .ToListAsync();
+            var query = _context.Dividas.Include(d => d.Devedor).Where(d => d.EmpresaID == empresaId);
+
+            string status = Request.Query["status"];
+            string devedor = Request.Query["devedor"];
+            string valorMinStr = Request.Query["valorMin"];
+            string valorMaxStr = Request.Query["valorMax"];
+            string dataInicioStr = Request.Query["dataInicio"];
+            string dataFimStr = Request.Query["dataFim"];
+
+            if (!string.IsNullOrEmpty(status))
+                query = query.Where(d => d.Status == status);
+            if (!string.IsNullOrEmpty(devedor))
+                query = query.Where(d => d.Devedor != null && d.Devedor.Name.Contains(devedor));
+            if (decimal.TryParse(valorMinStr, out var valorMin))
+                query = query.Where(d => d.Valor >= valorMin);
+            if (decimal.TryParse(valorMaxStr, out var valorMax))
+                query = query.Where(d => d.Valor <= valorMax);
+            if (DateTime.TryParse(dataInicioStr, out var dataInicio))
+                query = query.Where(d => d.DataVencimento >= dataInicio);
+            if (DateTime.TryParse(dataFimStr, out var dataFim))
+                query = query.Where(d => d.DataVencimento <= dataFim);
+
+            var dividas = await query.OrderByDescending(d => d.DataCriacao).ToListAsync();
 
             return View(dividas);
         }
