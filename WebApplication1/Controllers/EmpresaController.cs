@@ -328,14 +328,20 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ConfirmarImportacao(List<DividaImportada> dividasConfirmadas)
+        public async Task<IActionResult> ConfirmarImportacao(ImportacaoDividaViewModel model)
         {
             if (!EhEmpresaLogada())
                 return RedirectToAction("AcessoNegado", "Login");
 
             int empresaId = HttpContext.Session.GetInt32("EmpresaId") ?? 0;
 
-            foreach (var item in dividasConfirmadas)
+            if (model?.Dividas == null || !model.Dividas.Any())
+            {
+                TempData["MensagemErro"] = "Nenhuma dívida recebida para importação.";
+                return RedirectToAction("ImportarDividas");
+            }
+
+            foreach (var item in model.Dividas)
             {
                 var devedorExistente = await _context.Devedores
                     .FirstOrDefaultAsync(d => d.Cpf == item.CPF);

@@ -33,46 +33,48 @@ else
                     <tbody>
                     @for (int i = 0; i < Model.Dividas.Count; i++)
                     {
-                                <tr>
-                                    <td class="border border-gray-300 px-2 py-1">
+                        <tr>
+                            <td class="border border-gray-300 px-2 py-1">
                                 @Model.Dividas[i].Nome
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Nome" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
+                                <input type="hidden" name="Dividas[@i].Nome" value="@Model.Dividas[i].Nome" />
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
                                 @Model.Dividas[i].Email
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Email" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
+                                <input type="hidden" name="Dividas[@i].Email" value="@Model.Dividas[i].Email" />
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
                                 @Model.Dividas[i].Telefone
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Telefone" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
+                                <input type="hidden" name="Dividas[@i].Telefone" value="@Model.Dividas[i].Telefone" />
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
                                 @Model.Dividas[i].CPF
-                                        <input type="hidden" asp-for="@Model.Dividas[i].CPF" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
+                                <input type="hidden" name="Dividas[@i].CPF" value="@Model.Dividas[i].CPF" />
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
                                 @Model.Dividas[i].Titulo
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Titulo" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
+                                <input type="hidden" name="Dividas[@i].Titulo" value="@Model.Dividas[i].Titulo" />
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
                                 @Model.Dividas[i].Descricao
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Descricao" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
+                                <input type="hidden" name="Dividas[@i].Descricao" value="@Model.Dividas[i].Descricao" />
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
                                 @Model.Dividas[i].Valor.ToString("N2")
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Valor" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
+                                <input type="hidden" name="Dividas[@i].Valor" value="@Model.Dividas[i].Valor.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
                                 @Model.Dividas[i].Status
-                                        <input type="hidden" asp-for="@Model.Dividas[i].Status" />
-                                    </td>
-                                    <td class="border border-gray-300 px-2 py-1">
-                                @(Model.Dividas[i].DataVencimento.HasValue
-                                ? Model.Dividas[i].DataVencimento.Value.ToString("dd/MM/yyyy")
-                                : "")
-                                        <input type="hidden" asp-for="@Model.Dividas[i].DataVencimento" />
-                                    </td>
-                                </tr>
+                                <input type="hidden" name="Dividas[@i].Status" value="@Model.Dividas[i].Status" />
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
+                                @(Model.Dividas[i].DataVencimento.HasValue ? Model.Dividas[i].DataVencimento.Value.ToString("dd/MM/yyyy") : "")
+                                <input type="hidden" name="Dividas[@i].DataVencimento" value="@(Model.Dividas[i].DataVencimento.HasValue ? Model.Dividas[i].DataVencimento.Value.ToString("yyyy-MM-dd") : "")" />
+                            </td>
+                            <td class="border border-gray-300 px-2 py-1">
+                                @(Model.Dividas[i].DataPagamento.HasValue ? Model.Dividas[i].DataPagamento.Value.ToString("dd/MM/yyyy") : "")
+                                <input type="hidden" name="Dividas[@i].DataPagamento" value="@(Model.Dividas[i].DataPagamento.HasValue ? Model.Dividas[i].DataPagamento.Value.ToString("yyyy-MM-dd") : "")" />
+                            </td>
+                        </tr>
                     }
                     </tbody>
                 </table>

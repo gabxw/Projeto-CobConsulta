@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml;
+using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -19,15 +20,12 @@ namespace WebApplication1.Helpers
     {
         public static ImportResult ProcessarExcel(Stream excelStream, int empresaId)
         {
-            // EPPlus 8+ exige definir o contexto de licença ANTES de qualquer uso
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
             var resultado = new ImportResult();
 
             try
             {
-                using var package = new ExcelPackage(excelStream);
-                var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                using var workbook = new XLWorkbook(excelStream);
+                var worksheet = workbook.Worksheets.FirstOrDefault();
 
                 if (worksheet == null)
                 {
@@ -36,19 +34,18 @@ namespace WebApplication1.Helpers
                 }
 
                 int linha = 2;
-
                 while (true)
                 {
-                    var nome = worksheet.Cells[linha, 1].Text?.Trim();
-                    var telefone = worksheet.Cells[linha, 2].Text?.Trim();
-                    var email = worksheet.Cells[linha, 3].Text?.Trim();
-                    var cpf = worksheet.Cells[linha, 4].Text?.Trim();
-                    var titulo = worksheet.Cells[linha, 5].Text?.Trim();
-                    var descricao = worksheet.Cells[linha, 6].Text?.Trim();
-                    var valorTexto = worksheet.Cells[linha, 7].Text?.Trim();
-                    var status = worksheet.Cells[linha, 8].Text?.Trim();
-                    var vencimentoTexto = worksheet.Cells[linha, 9].Text?.Trim();
-                    var pagamentoTexto = worksheet.Cells[linha, 10].Text?.Trim();
+                    var nome = worksheet.Cell(linha, 1).GetString().Trim();
+                    var telefone = worksheet.Cell(linha, 2).GetString().Trim();
+                    var email = worksheet.Cell(linha, 3).GetString().Trim();
+                    var cpf = worksheet.Cell(linha, 4).GetString().Trim();
+                    var titulo = worksheet.Cell(linha, 5).GetString().Trim();
+                    var descricao = worksheet.Cell(linha, 6).GetString().Trim();
+                    var valorTexto = worksheet.Cell(linha, 7).GetString().Trim();
+                    var status = worksheet.Cell(linha, 8).GetString().Trim();
+                    var vencimentoTexto = worksheet.Cell(linha, 9).GetString().Trim();
+                    var pagamentoTexto = worksheet.Cell(linha, 10).GetString().Trim();
 
                     // Se linha estiver completamente vazia → fim dos dados
                     if (string.IsNullOrWhiteSpace(nome) &&
