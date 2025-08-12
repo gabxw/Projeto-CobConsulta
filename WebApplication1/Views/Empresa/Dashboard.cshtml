@@ -133,11 +133,11 @@
     <div class="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div class="rounded-lg bg-white p-6 shadow">
             <h3 class="mb-4 text-lg font-semibold">Cobranças Recentes</h3>
-            <div class="overflow-x-auto">
+            <div>
                 <table class="w-full text-left">
                     <thead class="bg-gray-100">
                         <tr>
-                            <th class="p-2">Título</th>
+                            <th class="p-2 max-w-xs whitespace-normal break-words">Título</th>
                             <th class="p-2">Devedor</th>
                             <th class="p-2">Valor</th>
                             <th class="p-2">Vencimento</th>
@@ -149,7 +149,7 @@
                         @foreach (var d in Model.Recentes)
                         {
                                 <tr class="border-b">
-                                    <td class="p-2">@d.Titulo</td>
+                                    <td class="p-2 max-w-xs whitespace-normal break-words">@d.Titulo</td>
                                     <td class="p-2">@d.Devedor?.Name</td>
                                     <td class="p-2">R$ @d.Valor.ToString("N2")</td>
                                     <td class="p-2">

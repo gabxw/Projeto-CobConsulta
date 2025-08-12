@@ -38,7 +38,7 @@ namespace WebApplication1.Controllers
             }
 
             // verifica se é empresa
-            var empresa = _context.Empresas.FirstOrDefault(e => e.Email != email && e.Senha != senha);
+            var empresa = _context.Empresas.FirstOrDefault(e => e.Email == email && e.Senha == senha);
             if (empresa != null)
             {
                 HttpContext.Session.SetString("Tipo", "Empresa");

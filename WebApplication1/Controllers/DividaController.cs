@@ -72,9 +72,9 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
-            if (divida.Status == "Pago")
+            if (divida.Status == "Quitado")
             {
-                TempData["Mensagem"] = "Esta dívida já foi paga.";
+                TempData["Mensagem"] = "Esta dívida já foi quitada.";
                 return RedirectToAction("MinhasDividas");
             }
             // Validação básica dos dados do cartão
@@ -89,7 +89,7 @@ namespace WebApplication1.Controllers
                 TempData["Mensagem"] = "Dados do cartão inválidos.";
                 return RedirectToAction("Pagar", new { id });
             }
-            divida.Status = "Pago";
+            divida.Status = "Quitado";
             divida.DataPagamento = DateTime.Now;
             await _context.SaveChangesAsync();
             TempData["Mensagem"] = "Pagamento realizado com sucesso!";

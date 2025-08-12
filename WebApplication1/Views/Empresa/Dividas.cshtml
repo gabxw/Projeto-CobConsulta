@@ -64,8 +64,8 @@
             <thead>
                 <tr class="bg-gray-100">
                     <th class="px-2 sm:px-4 py-3 text-left whitespace-nowrap">Devedor</th>
-                    <th class="px-2 sm:px-4 py-3 text-left whitespace-nowrap">Título</th>
-                    <th class="px-2 sm:px-4 py-3 text-left whitespace-nowrap">Descrição</th>
+                    <th class="px-2 sm:px-4 py-3 text-left max-w-xs whitespace-normal break-words">Título</th>
+                    <th class="px-2 sm:px-4 py-3 text-left max-w-md whitespace-normal break-words">Descrição</th>
                     <th class="px-2 sm:px-4 py-3 text-left whitespace-nowrap">Valor</th>
                     <th class="px-2 sm:px-4 py-3 text-left whitespace-nowrap">Vencimento</th>
                     <th class="px-2 sm:px-4 py-3 text-left whitespace-nowrap">Pagamento</th>
@@ -87,8 +87,8 @@
                     };
                 <tr class="border-b hover:bg-gray-50 transition">
                     <td class="px-2 sm:px-4 py-3 whitespace-nowrap">@item.Devedor?.Name</td>
-                    <td class="px-2 sm:px-4 py-3 whitespace-nowrap">@item.Titulo</td>
-                    <td class="px-2 sm:px-4 py-3 whitespace-nowrap">@item.Descricao</td>
+                    <td class="px-2 sm:px-4 py-3 max-w-xs whitespace-normal break-words">@item.Titulo</td>
+                    <td class="px-2 sm:px-4 py-3 max-w-md whitespace-normal break-words">@item.Descricao</td>
                     <td class="px-2 sm:px-4 py-3 font-semibold whitespace-nowrap">R$ @item.Valor.ToString("N2")</td>
                     <td class="px-2 sm:px-4 py-3 whitespace-nowrap">@item.DataVencimento?.ToString("dd/MM/yyyy")</td>
                     <td class="px-2 sm:px-4 py-3 whitespace-nowrap">@item.DataPagamento?.ToString("dd/MM/yyyy")</td>
