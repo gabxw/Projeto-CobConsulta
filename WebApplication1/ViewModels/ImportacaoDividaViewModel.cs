@@ -13,10 +13,11 @@
         public string Email { get; set; }
         public string CPF { get; set; }
 
-        public string Titulo { get; set; }
-        public string Descricao { get; set; }
-        public decimal Valor { get; set; }
-        public string Status { get; set; }
-        public DateTime? DataVencimento { get; set; }
+    public string Titulo { get; set; }
+    public string Descricao { get; set; }
+    public decimal Valor { get; set; }
+    public string Status { get; set; }
+    public DateTime? DataVencimento { get; set; }
+    public DateTime? DataPagamento { get; set; }
     }
 }

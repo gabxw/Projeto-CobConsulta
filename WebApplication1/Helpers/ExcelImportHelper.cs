@@ -36,6 +36,7 @@ namespace WebApplication1.Helpers
                 }
 
                 int linha = 2;
+
                 while (true)
                 {
                     var nome = worksheet.Cells[linha, 1].Text?.Trim();
@@ -47,6 +48,7 @@ namespace WebApplication1.Helpers
                     var valorTexto = worksheet.Cells[linha, 7].Text?.Trim();
                     var status = worksheet.Cells[linha, 8].Text?.Trim();
                     var vencimentoTexto = worksheet.Cells[linha, 9].Text?.Trim();
+                    var pagamentoTexto = worksheet.Cells[linha, 10].Text?.Trim();
 
                     // Se linha estiver completamente vazia → fim dos dados
                     if (string.IsNullOrWhiteSpace(nome) &&
@@ -67,6 +69,14 @@ namespace WebApplication1.Helpers
                         errosLinha.Add("Valor inválido.");
                     if (!DateTime.TryParse(vencimentoTexto, out var vencimento))
                         errosLinha.Add("Data de vencimento inválida.");
+                    DateTime? dataPagamento = null;
+                    if (!string.IsNullOrWhiteSpace(pagamentoTexto))
+                    {
+                        if (DateTime.TryParse(pagamentoTexto, out var pagamento))
+                            dataPagamento = pagamento;
+                        else
+                            errosLinha.Add("Data de pagamento inválida.");
+                    }
                     if (string.IsNullOrWhiteSpace(status)) status = "Pendente";
 
                     if (errosLinha.Any())
@@ -94,6 +104,7 @@ namespace WebApplication1.Helpers
                         Status = status,
                         DataCriacao = DateTime.Now,
                         DataVencimento = vencimento,
+                        DataPagamento = dataPagamento,
                         EmpresaID = empresaId,
                         Devedor = devedor
                     };

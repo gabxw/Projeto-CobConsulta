@@ -4,28 +4,34 @@
     ViewData["Title"] = "Importar Dívidas";
 }
 
-<h2 class="text-2xl font-bold mb-4">Importar Dívidas via Excel</h2>
 
-<form asp-action="ImportarDividas" method="post" enctype="multipart/form-data" class="space-y-4">
-    <div>
-        <label for="excelFile" class="block font-semibold">Selecione o arquivo:</label>
-        <input type="file" name="excelFile" class="border border-gray-300 p-2 rounded w-full" />
-    </div>
-
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Enviar
-    </button>
-</form>
-
-@if (Model?.Erros?.Any() == true)
-{
-        <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            <strong>Erros encontrados:</strong>
-            <ul class="list-disc pl-5">
-            @foreach (var erro in Model.Erros)
-            {
-                        <li>@erro</li>
-            }
-            </ul>
+<div class="flex justify-center items-center min-h-[60vh]">
+    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg border border-gray-200">
+        <div class="flex flex-col items-center mb-6">
+            <img src="/img/cob-logo.png" alt="CobConsulta" class="w-20 h-20 mb-2" />
+            <h2 class="text-2xl font-bold text-gray-800 mb-1">Importar Dívidas via Excel</h2>
+            <p class="text-gray-500 text-center mb-2">Faça o download do modelo, preencha os dados e envie o arquivo para importar suas dívidas em lote.</p>
+            <a href="/Empresa/BaixarModeloExcel" class="inline-block bg-green-600 text-white px-5 py-2 rounded shadow hover:bg-green-700 transition mb-2">Baixar modelo Excel</a>
         </div>
-}
+        <form asp-action="ImportarDividas" method="post" enctype="multipart/form-data" class="space-y-4">
+            <div>
+                <label for="excelFile" class="block font-semibold mb-1">Selecione o arquivo Excel:</label>
+                <input type="file" name="excelFile" accept=".xlsx" class="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg shadow hover:bg-blue-700 transition">Enviar</button>
+        </form>
+        @if (Model?.Erros?.Any() == true)
+        {
+            <div class="mt-6 bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                <strong class="block mb-2">Erros encontrados:</strong>
+                <ul class="list-disc pl-5 text-sm">
+                @foreach (var erro in Model.Erros)
+                {
+                    <li>@erro</li>
+                }
+                </ul>
+            </div>
+        }
+        <div class="mt-6 text-xs text-gray-400 text-center">Suporte: dúvidas ou problemas? Fale com o administrador.</div>
+    </div>
+</div>

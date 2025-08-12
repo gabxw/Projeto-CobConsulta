@@ -1,16 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ClosedXML.Excel;
+using OfficeOpenXml;
+
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication1.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApplication1.ViewModels;
 using WebApplication1.Helpers;
 using System.IO;
-
 
 namespace WebApplication1.Controllers
 {
@@ -21,6 +23,33 @@ namespace WebApplication1.Controllers
         public EmpresaController(AppDbContext context)
         {
             _context = context;
+        }
+
+        [HttpGet]
+        public IActionResult BaixarModeloExcel()
+        {
+            using var workbook = new XLWorkbook();
+            var ws = workbook.Worksheets.Add("ModeloDividas");
+            ws.Cell(1, 1).Value = "Nome";
+            ws.Cell(1, 2).Value = "Telefone";
+            ws.Cell(1, 3).Value = "Email";
+            ws.Cell(1, 4).Value = "CPF";
+            ws.Cell(1, 5).Value = "Titulo";
+            ws.Cell(1, 6).Value = "Descricao";
+            ws.Cell(1, 7).Value = "Valor";
+            ws.Cell(1, 8).Value = "Status";
+            ws.Cell(1, 9).Value = "DataVencimento";
+            ws.Cell(1, 10).Value = "DataPagamento";
+            using var stream = new System.IO.MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+            return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"modelo_dividas_{DateTime.Now:yyyyMMdd}.xlsx");
+        }
+
+        [HttpGet]
+        public IActionResult TesteRota()
+        {
+            return Content("rota ok");
         }
 
         private bool EhEmpresaLogada()
@@ -42,12 +71,12 @@ namespace WebApplication1.Controllers
 
             var query = _context.Dividas.Include(d => d.Devedor).Where(d => d.EmpresaID == empresaId);
 
-            string status = Request.Query["status"];
-            string devedor = Request.Query["devedor"];
-            string valorMinStr = Request.Query["valorMin"];
-            string valorMaxStr = Request.Query["valorMax"];
-            string dataInicioStr = Request.Query["dataInicio"];
-            string dataFimStr = Request.Query["dataFim"];
+            string status = Request.Query["status"].ToString() ?? string.Empty;
+            string devedor = Request.Query["devedor"].ToString() ?? string.Empty;
+            string valorMinStr = Request.Query["valorMin"].ToString() ?? string.Empty;
+            string valorMaxStr = Request.Query["valorMax"].ToString() ?? string.Empty;
+            string dataInicioStr = Request.Query["dataInicio"].ToString() ?? string.Empty;
+            string dataFimStr = Request.Query["dataFim"].ToString() ?? string.Empty;
 
             if (!string.IsNullOrEmpty(status))
                 query = query.Where(d => d.Status == status);
@@ -282,7 +311,8 @@ namespace WebApplication1.Controllers
                     Descricao = d.Descricao,
                     Valor = d.Valor,
                     Status = d.Status,
-                    DataVencimento = d.DataVencimento ?? DateTime.Now
+                    DataVencimento = d.DataVencimento ?? DateTime.Now,
+                    DataPagamento = d.DataPagamento
                 }).ToList();
 
                 return View("ConfirmarImportacao", new ImportacaoDividaViewModel
@@ -333,6 +363,7 @@ namespace WebApplication1.Controllers
                     Descricao = item.Descricao,
                     Valor = (int)item.Valor,
                     DataVencimento = item.DataVencimento,
+                    DataPagamento = item.DataPagamento,
                     DataCriacao = DateTime.Now,
                     Status = item.Status
                 };
@@ -450,7 +481,8 @@ namespace WebApplication1.Controllers
                 d.DataPagamento.HasValue &&
                 d.DataCriacao.HasValue &&
                 d.DataCriacao.Value > DateTime.MinValue)
-            .Select(d => (d.DataPagamento.Value - d.DataCriacao.Value).TotalDays)
+            .Where(d => d.DataPagamento.HasValue && d.DataCriacao.HasValue)
+            .Select(d => (d.DataPagamento!.Value - d.DataCriacao!.Value).TotalDays)
             .ToList();
 
             double mediaDias = pagamentosQuitados.Any() ? pagamentosQuitados.Average() : 0;
@@ -463,12 +495,12 @@ namespace WebApplication1.Controllers
 
             decimal faturamentoMesAtual = dividasDaEmpresa
                 .Where(d => (d.Status == "Quitado" || d.Status == "Finalizado") && d.DataPagamento.HasValue)
-                .Where(d => d.DataPagamento.Value.Date >= primeiroDiaMesAtual.Date && d.DataPagamento.Value.Date <= hoje)
+                .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Date >= primeiroDiaMesAtual.Date && d.DataPagamento.Value.Date <= hoje)
                 .Sum(d => d.Valor);
 
             decimal faturamentoMesAnterior = dividasDaEmpresa
                 .Where(d => (d.Status == "Quitado" || d.Status == "Finalizado") && d.DataPagamento.HasValue)
-                .Where(d => d.DataPagamento.Value.Date >= primeiroDiaMesAnterior.Date && d.DataPagamento.Value.Date <= fimMesAnterior.Date)
+                .Where(d => d.DataPagamento.HasValue && d.DataPagamento.Value.Date >= primeiroDiaMesAnterior.Date && d.DataPagamento.Value.Date <= fimMesAnterior.Date)
                 .Sum(d => d.Valor);
 
             var alertas = dividasDaEmpresa
@@ -481,7 +513,7 @@ namespace WebApplication1.Controllers
                     Titulo = d.Titulo,
                     DevedorNome = d.Devedor?.Name ?? "",
                     Valor = d.Valor,
-                    DiasAtraso = (hoje - d.DataVencimento.Value.Date).Days
+                    DiasAtraso = d.DataVencimento.HasValue ? (hoje - d.DataVencimento.Value.Date).Days : 0
                 })
                 .ToList();
 
@@ -498,7 +530,7 @@ namespace WebApplication1.Controllers
 
             foreach (var d in pagosRecentes)
             {
-                var dias = (int)(hoje - d.DataPagamento.Value.Date).TotalDays;
+                var dias = d.DataPagamento.HasValue ? (int)(hoje - d.DataPagamento.Value.Date).TotalDays : 0;
                 var quando = dias == 0 ? "hoje" : $"{dias} dia(s) atrás";
                 notificacoes.Add($"Devedor {d.Devedor?.Name} quitou R$ {d.Valor.ToString("N2")} em \"{d.Titulo}\" {quando}.");
             }
@@ -524,7 +556,7 @@ namespace WebApplication1.Controllers
 
             foreach (var d in proximas)
             {
-                var dias = (int)(d.DataVencimento.Value.Date - hoje).TotalDays;
+                var dias = d.DataVencimento.HasValue ? (int)(d.DataVencimento.Value.Date - hoje).TotalDays : 0;
                 notificacoes.Add($"Dívida \"{d.Titulo}\" de {d.Devedor?.Name} vence em {dias} dia(s).");
             }
 
