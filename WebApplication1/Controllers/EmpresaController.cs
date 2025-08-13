@@ -1,8 +1,4 @@
-﻿using ClosedXML.Excel;
-using OfficeOpenXml;
-
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models;
 using System;
@@ -28,20 +24,25 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public IActionResult BaixarModeloExcel()
         {
-            using var workbook = new XLWorkbook();
-            var ws = workbook.Worksheets.Add("ModeloDividas");
-            ws.Cell(1, 1).Value = "Nome";
-            ws.Cell(1, 2).Value = "Telefone";
-            ws.Cell(1, 3).Value = "Email";
-            ws.Cell(1, 4).Value = "CPF";
-            ws.Cell(1, 5).Value = "Titulo";
-            ws.Cell(1, 6).Value = "Descricao";
-            ws.Cell(1, 7).Value = "Valor";
-            ws.Cell(1, 8).Value = "Status";
-            ws.Cell(1, 9).Value = "DataVencimento";
-            ws.Cell(1, 10).Value = "DataPagamento";
-            using var stream = new System.IO.MemoryStream();
-            workbook.SaveAs(stream);
+            // Gera o modelo de Excel usando MiniExcel
+            var rows = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>
+                {
+                    ["Nome"] = "",
+                    ["Telefone"] = "",
+                    ["Email"] = "",
+                    ["CPF"] = "",
+                    ["Titulo"] = "",
+                    ["Descricao"] = "",
+                    ["Valor"] = "",
+                    ["Status"] = "",
+                    ["DataVencimento"] = "",
+                    ["DataPagamento"] = ""
+                }
+            };
+            using var stream = new MemoryStream();
+            MiniExcelLibs.MiniExcel.SaveAs(stream, rows, sheetName: "ModeloDividas");
             stream.Position = 0;
             return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"modelo_dividas_{DateTime.Now:yyyyMMdd}.xlsx");
         }

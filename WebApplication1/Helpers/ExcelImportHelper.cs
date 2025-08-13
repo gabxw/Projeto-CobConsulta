@@ -1,5 +1,4 @@
-﻿using OfficeOpenXml;
-using ClosedXML.Excel;
+﻿using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,48 +20,35 @@ namespace WebApplication1.Helpers
         public static ImportResult ProcessarExcel(Stream excelStream, int empresaId)
         {
             var resultado = new ImportResult();
-
             try
             {
-                using var workbook = new XLWorkbook(excelStream);
-                var worksheet = workbook.Worksheets.FirstOrDefault();
-
-                if (worksheet == null)
-                {
-                    resultado.Erros.Add("A planilha está vazia ou não foi encontrada.");
-                    return resultado;
-                }
-
+                var rows = MiniExcel.Query(excelStream, useHeaderRow: true).ToList();
                 int linha = 2;
-                while (true)
+                foreach (var row in rows)
                 {
-                    var nome = worksheet.Cell(linha, 1).GetString().Trim();
-                    var telefone = worksheet.Cell(linha, 2).GetString().Trim();
-                    var email = worksheet.Cell(linha, 3).GetString().Trim();
-                    var cpf = worksheet.Cell(linha, 4).GetString().Trim();
-                    var titulo = worksheet.Cell(linha, 5).GetString().Trim();
-                    var descricao = worksheet.Cell(linha, 6).GetString().Trim();
-                    var valorTexto = worksheet.Cell(linha, 7).GetString().Trim();
-                    var status = worksheet.Cell(linha, 8).GetString().Trim();
-                    var vencimentoTexto = worksheet.Cell(linha, 9).GetString().Trim();
-                    var pagamentoTexto = worksheet.Cell(linha, 10).GetString().Trim();
+                    var dict = (IDictionary<string, object>)row;
+                    string nome = dict.ContainsKey("Nome") ? dict["Nome"]?.ToString()?.Trim() ?? "" : "";
+                    string telefone = dict.ContainsKey("Telefone") ? dict["Telefone"]?.ToString()?.Trim() ?? "" : "";
+                    string email = dict.ContainsKey("Email") ? dict["Email"]?.ToString()?.Trim() ?? "" : "";
+                    string cpf = dict.ContainsKey("CPF") ? dict["CPF"]?.ToString()?.Trim() ?? "" : "";
+                    string titulo = dict.ContainsKey("Titulo") ? dict["Titulo"]?.ToString()?.Trim() ?? "" : "";
+                    string descricao = dict.ContainsKey("Descricao") ? dict["Descricao"]?.ToString()?.Trim() ?? "" : "";
+                    string valorTexto = dict.ContainsKey("Valor") ? dict["Valor"]?.ToString()?.Trim() ?? "" : "";
+                    string status = dict.ContainsKey("Status") ? dict["Status"]?.ToString()?.Trim() ?? "" : "";
+                    string vencimentoTexto = dict.ContainsKey("DataVencimento") ? dict["DataVencimento"]?.ToString()?.Trim() ?? "" : "";
+                    string pagamentoTexto = dict.ContainsKey("DataPagamento") ? dict["DataPagamento"]?.ToString()?.Trim() ?? "" : "";
 
-                    // Se linha estiver completamente vazia → fim dos dados
-                    if (string.IsNullOrWhiteSpace(nome) &&
-                        string.IsNullOrWhiteSpace(cpf) &&
-                        string.IsNullOrWhiteSpace(titulo))
+                    if (string.IsNullOrWhiteSpace(nome) && string.IsNullOrWhiteSpace(cpf) && string.IsNullOrWhiteSpace(titulo))
                         break;
 
-                    // Validação dos campos
                     List<string> errosLinha = new();
-
                     if (string.IsNullOrWhiteSpace(nome)) errosLinha.Add("Nome é obrigatório.");
                     if (string.IsNullOrWhiteSpace(telefone)) errosLinha.Add("Telefone é obrigatório.");
                     if (string.IsNullOrWhiteSpace(email) || !IsValidEmail(email)) errosLinha.Add("Email inválido.");
                     if (string.IsNullOrWhiteSpace(cpf) || !IsValidCpf(cpf)) errosLinha.Add("CPF inválido.");
                     if (string.IsNullOrWhiteSpace(titulo)) errosLinha.Add("Título é obrigatório.");
                     if (string.IsNullOrWhiteSpace(descricao)) errosLinha.Add("Descrição é obrigatória.");
-                    if (!decimal.TryParse(valorTexto, NumberStyles.Any, CultureInfo.InvariantCulture, out var valor))
+                    if (!decimal.TryParse(valorTexto.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out var valor))
                         errosLinha.Add("Valor inválido.");
                     if (!DateTime.TryParse(vencimentoTexto, out var vencimento))
                         errosLinha.Add("Data de vencimento inválida.");
@@ -83,7 +69,6 @@ namespace WebApplication1.Helpers
                         continue;
                     }
 
-                    // Criar objeto devedor e dívida
                     var devedor = new Devedor
                     {
                         Name = nome,
@@ -112,9 +97,8 @@ namespace WebApplication1.Helpers
             }
             catch (Exception ex)
             {
-                resultado.Erros.Add($"Erro inesperado ao ler o Excel: {ex.Message}");
+                resultado.Erros.Add($"Erro ao ler o Excel: {ex.Message}");
             }
-
             return resultado;
         }
 

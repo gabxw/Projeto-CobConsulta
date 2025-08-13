@@ -23,6 +23,13 @@ Console.WriteLine($"Connection string usada: {connectionString}");
 
 var app = builder.Build();
 
+// Tratamento global de exceções para evitar que a aplicação feche inesperadamente
+AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
+{
+    var ex = eventArgs.ExceptionObject as Exception;
+    Console.WriteLine($"[Global Exception] {ex}");
+};
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
