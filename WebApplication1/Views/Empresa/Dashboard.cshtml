@@ -4,6 +4,7 @@
     ViewData["Title"] = "Dashboard - " + Model.NomeEmpresa;
 }
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
 <div class="mx-auto max-w-7xl px-4 py-8">
     <h1 class="mb-6 text-4xl font-bold">Dashboard - @Model.NomeEmpresa</h1>
@@ -178,15 +179,18 @@
 
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script>
     // Status doughnut com percentual e número
     const statusCtx = document.getElementById('statusChart');
+    const statusData = [@Model.Pendentes, @Model.Atrasadas, @Model.Quitadas];
+    const statusTotal = statusData.reduce((sum, v) => sum + v, 0);
     new Chart(statusCtx, {
         type: 'doughnut',
         data: {
             labels: ['Pendentes', 'Atrasadas', 'Quitadas'],
             datasets: [{
-                data: [@Model.Pendentes, @Model.Atrasadas, @Model.Quitadas],
+                data: statusData,
                 backgroundColor: ['#facc15', '#ef4444', '#10b981'],
                 borderWidth: 0
             }]
@@ -205,11 +209,28 @@
                             return `${label}: ${value} (${percent}%)`;
                         }
                     }
+                },
+                datalabels: {
+                    color: '#fff',
+                    font: { weight: 'bold', size: 16 },
+                    formatter: function(value, context) {
+                        const percent = statusTotal ? ((value / statusTotal) * 100).toFixed(1) : '0.0';
+                        return `${value}\n${percent}%`;
+                    },
+                    textAlign: 'center',
+                    anchor: 'center',
+                    align: 'center',
+                    backgroundColor: function(context) {
+                        return context.dataset.backgroundColor[context.dataIndex];
+                    },
+                    borderRadius: 8,
+                    padding: 6
                 }
             },
             responsive: true,
             maintainAspectRatio: false,
-        }
+        },
+        plugins: [ChartDataLabels]
     });
 
         // tempo médio de pagamento
